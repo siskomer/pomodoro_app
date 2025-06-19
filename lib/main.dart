@@ -6,8 +6,8 @@ import 'presentation/theme.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'presentation/viewmodels/stats_viewmodel.dart';
 import 'presentation/viewmodels/settings_viewmodel.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'generated/l10n.dart';
+// import 'package:flutter_localizations/flutter_localizations.dart';
+// import 'generated/l10n.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,13 +24,8 @@ class MyApp extends StatelessWidget {
       title: 'Pomodoro App',
       theme: AppTheme.lightTheme,
       home: SplashScreen(),
-      localizationsDelegates: const [
-        S.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: S.delegate.supportedLocales,
+      // localizationsDelegates: AppLocalizations.localizationsDelegates,
+      // supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }

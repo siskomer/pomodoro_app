@@ -46,19 +46,22 @@ class SettingsViewModel extends AsyncNotifier<SettingsState> {
   }
 
   Future<void> setPomodoroMinutes(int minutes) async {
-    final newState = state.value!.copyWith(pomodoroMinutes: minutes);
+    final current = state.value ?? SettingsState();
+    final newState = current.copyWith(pomodoroMinutes: minutes);
     state = AsyncData(newState);
     await _box.put('settings', newState);
   }
 
   Future<void> setBreakMinutes(int minutes) async {
-    final newState = state.value!.copyWith(breakMinutes: minutes);
+    final current = state.value ?? SettingsState();
+    final newState = current.copyWith(breakMinutes: minutes);
     state = AsyncData(newState);
     await _box.put('settings', newState);
   }
 
   Future<void> setFullFocusMode(bool value) async {
-    final newState = state.value!.copyWith(fullFocusMode: value);
+    final current = state.value ?? SettingsState();
+    final newState = current.copyWith(fullFocusMode: value);
     state = AsyncData(newState);
     await _box.put('settings', newState);
   }

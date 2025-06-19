@@ -5,7 +5,7 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.light,
       primaryColor: const Color(0xFF1976D2), // Mavi ana renk
-      scaffoldBackgroundColor: const Color(0xFFF3F7FB),
+      scaffoldBackgroundColor: const Color(0xFFE3F2FD), // Çok açık mavi
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xFF1976D2),
         elevation: 0,
@@ -19,7 +19,7 @@ class AppTheme {
       colorScheme: ColorScheme.fromSwatch().copyWith(
         primary: const Color(0xFF1976D2),
         secondary: const Color(0xFF64B5F6),
-        background: const Color(0xFFF3F7FB),
+        background: const Color(0xFFE3F2FD), // Çok açık mavi
         error: Colors.redAccent,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

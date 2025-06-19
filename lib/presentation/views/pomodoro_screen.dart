@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/pomodoro_provider.dart';
 import '../providers/stats_provider.dart';
 import '../providers/settings_provider.dart';
-import '../../l10n/app_localizations.dart';
 
 class PomodoroScreen extends ConsumerStatefulWidget {
   const PomodoroScreen({Key? key}) : super(key: key);
@@ -38,7 +37,10 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
     if (settingsAsync.hasError) {
       return Scaffold(body: Center(child: Text('Ayarlar yüklenemedi')));
     }
-    final settings = settingsAsync.value!;
+    final settings = settingsAsync.value;
+    if (settings == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     final pomodoro = ref.watch(pomodoroViewModelProvider(settings));
     final viewModel = ref.read(pomodoroViewModelProvider(settings).notifier);
     final statsViewModel = ref.read(statsProvider.notifier);
@@ -142,10 +144,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              AppLocalizations.of(context)!.focusTime,
-              style: theme.textTheme.headlineLarge,
-            ),
+            Text('Odaklanma Zamanı!', style: theme.textTheme.headlineLarge),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(32),
@@ -200,66 +199,57 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                 ],
               ),
             ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              icon: Icon(pomodoro.isRunning ? Icons.pause : Icons.play_arrow),
+              label: Text(pomodoro.isRunning ? 'Duraklat' : 'Başlat'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                if (pomodoro.isRunning) {
+                  viewModel.pause();
+                } else {
+                  viewModel.start();
+                  if (settings.fullFocusMode) {
+                    setState(() {
+                      isFocusMode = true;
+                    });
+                  }
+                }
+              },
+            ),
             const SizedBox(height: 32),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    if (pomodoro.isRunning) {
-                      viewModel.pause();
-                    } else {
-                      viewModel.start();
-                      if (settings.fullFocusMode) {
-                        setState(() {
-                          isFocusMode = true;
-                        });
-                      }
-                    }
-                  },
-                  icon: Icon(
-                    pomodoro.isRunning ? Icons.pause : Icons.play_arrow,
-                  ),
-                  label: Text(
-                    pomodoro.isRunning
-                        ? AppLocalizations.of(context)!.pause
-                        : AppLocalizations.of(context)!.start,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    elevation: 6,
-                    shadowColor: colorScheme.primary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 14,
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+            ElevatedButton.icon(
+              onPressed: viewModel.reset,
+              icon: const Icon(Icons.refresh),
+              label: Text('Sıfırla'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                elevation: 6,
+                shadowColor: Colors.red,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
                 ),
-                ElevatedButton.icon(
-                  onPressed: viewModel.reset,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(AppLocalizations.of(context)!.reset),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    elevation: 6,
-                    shadowColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 14,
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
             ),
             const SizedBox(height: 32),
           ],

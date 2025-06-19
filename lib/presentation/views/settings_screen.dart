@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/settings_provider.dart';
-import '../generated/l10n.dart';
 
 class SettingsScreen extends ConsumerWidget {
   @override
@@ -9,7 +8,7 @@ class SettingsScreen extends ConsumerWidget {
     final settingsAsync = ref.watch(settingsProvider);
     final settingsViewModel = ref.read(settingsProvider.notifier);
     return Scaffold(
-      appBar: AppBar(title: Text(S.of(context).settings)),
+      appBar: AppBar(title: Text('Ayarlar')),
       body: settingsAsync.when(
         data: (settings) => Padding(
           padding: const EdgeInsets.all(24.0),
@@ -30,7 +29,7 @@ class SettingsScreen extends ConsumerWidget {
                     settingsViewModel.setPomodoroMinutes((value ~/ 5) * 5),
               ),
               Text(
-                S.of(context).minutes(settings.pomodoroMinutes),
+                '${settings.pomodoroMinutes} dakika',
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 32),
@@ -48,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
                     settingsViewModel.setBreakMinutes((value ~/ 5) * 5),
               ),
               Text(
-                S.of(context).minutes(settings.breakMinutes),
+                '${settings.breakMinutes} dakika',
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 32),
