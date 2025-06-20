@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'presentation/viewmodels/stats_viewmodel.dart';
 import 'presentation/viewmodels/settings_viewmodel.dart';
 import 'presentation/viewmodels/todo_viewmodel.dart';
+import 'presentation/providers/theme_mode_provider.dart';
 // import 'package:flutter_localizations/flutter_localizations.dart';
 // import 'generated/l10n.dart';
 
@@ -15,18 +16,33 @@ void main() async {
   Hive.registerAdapter(PomodoroRecordAdapter());
   Hive.registerAdapter(SettingsStateAdapter());
   Hive.registerAdapter(TodoItemAdapter());
+  Hive.registerAdapter(AppThemeModeAdapter());
   await Hive.deleteBoxFromDisk('settings_box');
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appThemeMode = ref.watch(themeModeProvider);
+    ThemeMode themeMode;
+    switch (appThemeMode) {
+      case AppThemeMode.light:
+        themeMode = ThemeMode.light;
+        break;
+      case AppThemeMode.dark:
+        themeMode = ThemeMode.dark;
+        break;
+      default:
+        themeMode = ThemeMode.system;
+    }
     return MaterialApp(
       title: 'Pomodoro App',
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
       home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
       // localizationsDelegates: AppLocalizations.localizationsDelegates,

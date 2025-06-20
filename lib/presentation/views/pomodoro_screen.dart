@@ -111,7 +111,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
 
     // NORMAL MOD
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F3FF),
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         title: Text(
           'Pomodoro Sayacı',
@@ -119,7 +119,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        backgroundColor: const Color(0xFFF5F3FF),
+        backgroundColor: theme.colorScheme.background,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -138,7 +138,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
             children: [
               const Spacer(),
               AppTheme.modernCard(
-                backgroundColor: Colors.white,
+                backgroundColor: theme.cardColor,
                 child: _buildTimer(theme, pomodoro),
               ),
               const Spacer(),

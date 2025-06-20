@@ -8,15 +8,16 @@ class QuoteScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final quoteState = ref.watch(quoteProvider);
     final quoteViewModel = ref.read(quoteProvider.notifier);
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF1F2), // Açık kırmızı/pembe
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         title: const Text('Günün Sözü'),
-        backgroundColor: const Color(0xFFFFF1F2),
+        backgroundColor: theme.colorScheme.background,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppTheme.errorColor),
-        titleTextStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-          color: AppTheme.errorColor,
+        iconTheme: IconThemeData(color: theme.colorScheme.error),
+        titleTextStyle: theme.textTheme.headlineSmall?.copyWith(
+          color: theme.colorScheme.error,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -24,7 +25,7 @@ class QuoteScreen extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(32.0),
           child: Card(
-            color: Colors.white,
+            color: theme.cardColor,
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -36,26 +37,25 @@ class QuoteScreen extends ConsumerWidget {
                 children: [
                   Icon(
                     Icons.format_quote,
-                    color: AppTheme.errorColor,
+                    color: theme.colorScheme.error,
                     size: 48,
                   ),
                   const SizedBox(height: 24),
                   Text(
                     '"${quoteState.quote}"',
-                    style: TextStyle(
-                      fontSize: 22,
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontStyle: FontStyle.italic,
-                      color: AppTheme.errorColor.withOpacity(0.85),
+                      color: theme.colorScheme.error.withOpacity(0.85),
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
                     onPressed: quoteViewModel.randomQuote,
-                    icon: const Icon(Icons.refresh, color: Colors.white),
+                    icon: const Icon(Icons.refresh),
                     label: const Text('Yeni Söz'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.errorColor,
+                      backgroundColor: theme.colorScheme.error,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

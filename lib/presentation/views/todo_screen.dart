@@ -59,7 +59,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
               ),
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(1),
-                child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+                child: Container(height: 1, color: theme.dividerColor),
               ),
             ),
 
@@ -68,6 +68,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: AppTheme.modernCard(
+                  backgroundColor: theme.cardColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -75,7 +76,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                         children: [
                           Icon(
                             Icons.add_task,
-                            color: AppTheme.primaryColor,
+                            color: theme.colorScheme.primary,
                             size: 24,
                           ),
                           const SizedBox(width: 12),
@@ -178,6 +179,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: AppTheme.modernCard(
+                      backgroundColor: theme.cardColor,
                       child: Row(
                         children: [
                           // Checkbox
@@ -228,7 +230,8 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                                         ? TextDecoration.lineThrough
                                         : null,
                                     color: todo.isDone
-                                        ? const Color(0xFF94A3B8)
+                                        ? theme.colorScheme.onSurface
+                                              .withOpacity(0.5)
                                         : theme.colorScheme.onSurface,
                                     fontWeight: todo.isDone
                                         ? FontWeight.w400
@@ -240,7 +243,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                                   Text(
                                     'Tamamlandı',
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      color: AppTheme.successColor,
+                                      color: theme.colorScheme.secondary,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -252,7 +255,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                           // Delete Button
                           Container(
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFEF2F2),
+                              color: theme.colorScheme.error.withOpacity(0.08),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Material(
@@ -264,7 +267,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Icon(
                                     Icons.delete_outline,
-                                    color: AppTheme.errorColor,
+                                    color: theme.colorScheme.error,
                                     size: 20,
                                   ),
                                 ),
