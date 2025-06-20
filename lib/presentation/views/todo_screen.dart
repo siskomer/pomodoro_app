@@ -95,6 +95,9 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                             child: TextField(
                               controller: _controller,
                               focusNode: _focusNode,
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurface,
+                              ),
                               decoration: InputDecoration(
                                 hintText: 'Görev açıklaması...',
                                 border: OutlineInputBorder(
@@ -102,7 +105,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: const Color(0xFFF1F5F9),
+                                fillColor: theme.inputDecorationTheme.fillColor,
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                   vertical: 16,

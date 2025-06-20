@@ -247,67 +247,90 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final stats = ref.watch(statsProvider);
+    final statsViewModel = ref.read(statsProvider.notifier);
     final range = getRange(_selectedPeriod);
     final pomodoros = stats.getPomodorosFor(range.start, range.end);
     final focusMinutes = stats.getFocusMinutesFor(range.start, range.end);
     final breakMinutes = stats.getBreakMinutesFor(range.start, range.end);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('İstatistikler')),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ChoiceChip(
-                  label: const Text('Günlük'),
-                  selected: _selectedPeriod == StatsPeriod.daily,
-                  onSelected: (_) =>
-                      setState(() => _selectedPeriod = StatsPeriod.daily),
-                ),
-                const SizedBox(width: 12),
-                ChoiceChip(
-                  label: const Text('Haftalık'),
-                  selected: _selectedPeriod == StatsPeriod.weekly,
-                  onSelected: (_) =>
-                      setState(() => _selectedPeriod = StatsPeriod.weekly),
-                ),
-                const SizedBox(width: 12),
-                ChoiceChip(
-                  label: const Text('Aylık'),
-                  selected: _selectedPeriod == StatsPeriod.monthly,
-                  onSelected: (_) =>
-                      setState(() => _selectedPeriod = StatsPeriod.monthly),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            buildBarChart(stats),
-            const SizedBox(height: 32),
-            StatCard(
-              title: 'Tamamlanan Pomodoro',
-              value: pomodoros.toString(),
-              icon: Icons.timer,
-              color: Colors.blue,
-            ),
-            const SizedBox(height: 24),
-            StatCard(
-              title: 'Toplam Odaklanma (dk)',
-              value: focusMinutes.toString(),
-              icon: Icons.access_time,
-              color: Colors.green,
-            ),
-            const SizedBox(height: 24),
-            StatCard(
-              title: 'Toplam Mola (dk)',
-              value: breakMinutes.toString(),
-              icon: Icons.coffee,
-              color: Colors.orange,
-            ),
-          ],
+      backgroundColor: theme.colorScheme.background,
+      appBar: AppBar(
+        title: Text(
+          'İstatistikler',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        backgroundColor: theme.colorScheme.background,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: theme.colorScheme.onBackground,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ChoiceChip(
+                    label: const Text('Günlük'),
+                    selected: _selectedPeriod == StatsPeriod.daily,
+                    onSelected: (_) =>
+                        setState(() => _selectedPeriod = StatsPeriod.daily),
+                  ),
+                  const SizedBox(width: 12),
+                  ChoiceChip(
+                    label: const Text('Haftalık'),
+                    selected: _selectedPeriod == StatsPeriod.weekly,
+                    onSelected: (_) =>
+                        setState(() => _selectedPeriod = StatsPeriod.weekly),
+                  ),
+                  const SizedBox(width: 12),
+                  ChoiceChip(
+                    label: const Text('Aylık'),
+                    selected: _selectedPeriod == StatsPeriod.monthly,
+                    onSelected: (_) =>
+                        setState(() => _selectedPeriod = StatsPeriod.monthly),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              buildBarChart(stats),
+              const SizedBox(height: 32),
+              StatCard(
+                title: 'Tamamlanan Pomodoro',
+                value: pomodoros.toString(),
+                icon: Icons.timer,
+                color: Colors.blue,
+              ),
+              const SizedBox(height: 24),
+              StatCard(
+                title: 'Toplam Odaklanma (dk)',
+                value: focusMinutes.toString(),
+                icon: Icons.access_time,
+                color: Colors.green,
+              ),
+              const SizedBox(height: 24),
+              StatCard(
+                title: 'Toplam Mola (dk)',
+                value: breakMinutes.toString(),
+                icon: Icons.coffee,
+                color: Colors.orange,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -16,7 +16,6 @@ class DashboardScreen extends StatelessWidget {
     final List<_DashboardItem> items = [
       _DashboardItem(
         title: 'Pomodoro Sayacı',
-        subtitle: 'Odaklanma zamanı',
         icon: Icons.timer_outlined,
         gradient: AppTheme.primaryGradient,
         onTap: () => Navigator.push(
@@ -26,7 +25,6 @@ class DashboardScreen extends StatelessWidget {
       ),
       _DashboardItem(
         title: 'İstatistikler',
-        subtitle: 'Performansınızı takip edin',
         icon: Icons.analytics_outlined,
         gradient: AppTheme.successGradient,
         onTap: () => Navigator.push(
@@ -36,7 +34,6 @@ class DashboardScreen extends StatelessWidget {
       ),
       _DashboardItem(
         title: 'Yapılacaklar',
-        subtitle: 'Görevlerinizi yönetin',
         icon: Icons.task_alt_outlined,
         gradient: AppTheme.warningGradient,
         onTap: () => Navigator.push(
@@ -46,7 +43,6 @@ class DashboardScreen extends StatelessWidget {
       ),
       _DashboardItem(
         title: 'Günün Sözü',
-        subtitle: 'Motivasyon için',
         icon: Icons.format_quote_outlined,
         gradient: AppTheme.errorGradient,
         onTap: () => Navigator.push(
@@ -56,7 +52,6 @@ class DashboardScreen extends StatelessWidget {
       ),
       _DashboardItem(
         title: 'Ayarlar',
-        subtitle: 'Uygulama ayarları',
         icon: Icons.settings_outlined,
         gradient: [AppTheme.primaryColor, AppTheme.accentColor],
         onTap: () => Navigator.push(
@@ -149,14 +144,12 @@ class DashboardScreen extends StatelessWidget {
 
 class _DashboardItem {
   final String title;
-  final String subtitle;
   final IconData icon;
   final List<Color> gradient;
   final VoidCallback onTap;
 
   _DashboardItem({
     required this.title,
-    required this.subtitle,
     required this.icon,
     required this.gradient,
     required this.onTap,
@@ -215,14 +208,6 @@ class _DashboardCard extends StatelessWidget {
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    item.subtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 13,
                     ),
                   ),
                 ],

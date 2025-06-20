@@ -133,18 +133,25 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(),
-              AppTheme.modernCard(
-                backgroundColor: theme.cardColor,
-                child: _buildTimer(theme, pomodoro),
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight:
+                    MediaQuery.of(context).size.height - kToolbarHeight - 48,
               ),
-              const Spacer(),
-              _buildControls(viewModel, pomodoro, theme, settings),
-              const Spacer(),
-            ],
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 32),
+                    Center(child: _buildTimer(theme, pomodoro)),
+                    const SizedBox(height: 40),
+                    _buildControls(viewModel, pomodoro, theme, settings),
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -152,48 +159,63 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
   }
 
   Widget _buildTimer(ThemeData theme, Pomodoro pomodoro) {
+    final isBreak = pomodoro.isBreak;
+    final gradient = isBreak
+        ? [AppTheme.successColor, const Color(0xFF4ADE80)]
+        : [AppTheme.primaryColor, AppTheme.accentColor];
     return SizedBox(
-      width: 300,
-      height: 300,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(
-          begin: 1.0,
-          end: pomodoro.duration > 0
-              ? pomodoro.remaining / pomodoro.duration
-              : 0,
-        ),
-        duration: const Duration(milliseconds: 500),
-        builder: (context, value, child) {
-          return Stack(
-            fit: StackFit.expand,
-            alignment: Alignment.center,
-            children: [
-              CircularProgressIndicator(
-                value: value,
-                strokeWidth: 12,
-                backgroundColor: theme.colorScheme.surfaceVariant,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  pomodoro.isBreak
-                      ? AppTheme.successColor
-                      : AppTheme.primaryColor,
-                ),
-              ),
-              Column(
+      width: 260,
+      height: 260,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Çok katmanlı, gradientli progress bar
+          ShaderMask(
+            shaderCallback: (rect) {
+              return SweepGradient(
+                startAngle: -1.57,
+                endAngle: 4.71,
+                colors: gradient,
+                stops: const [0.0, 1.0],
+                transform: GradientRotation(-1.57),
+              ).createShader(rect);
+            },
+            child: CircularProgressIndicator(
+              value: pomodoro.duration > 0
+                  ? pomodoro.remaining / pomodoro.duration
+                  : 0,
+              strokeWidth: 16,
+              backgroundColor: theme.colorScheme.surface.withOpacity(0.10),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          ),
+          // Glassmorphism Effect
+          Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Center(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     formatTime(pomodoro.remaining),
                     style: theme.textTheme.displayLarge?.copyWith(
                       fontFamily: 'monospace',
-                      fontWeight: FontWeight.w300,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 60,
+                      letterSpacing: 2,
                       color: theme.colorScheme.onBackground,
                     ),
                   ),
                 ],
               ),
-            ],
-          );
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
