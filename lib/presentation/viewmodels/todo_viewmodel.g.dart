@@ -1,38 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'settings_viewmodel.dart';
+part of 'todo_viewmodel.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class SettingsStateAdapter extends TypeAdapter<SettingsState> {
+class TodoItemAdapter extends TypeAdapter<TodoItem> {
   @override
-  final int typeId = 1;
+  final int typeId = 2;
 
   @override
-  SettingsState read(BinaryReader reader) {
+  TodoItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return SettingsState(
-      pomodoroMinutes: fields[0] as int,
-      breakMinutes: fields[1] as int,
-      fullFocusMode: fields[2] as bool,
+    return TodoItem(
+      id: fields[0] as String,
+      title: fields[1] as String,
+      isDone: fields[2] as bool,
     );
   }
 
   @override
-  void write(BinaryWriter writer, SettingsState obj) {
+  void write(BinaryWriter writer, TodoItem obj) {
     writer
       ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.pomodoroMinutes)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.breakMinutes)
+      ..write(obj.title)
       ..writeByte(2)
-      ..write(obj.fullFocusMode);
+      ..write(obj.isDone);
   }
 
   @override
@@ -41,7 +41,7 @@ class SettingsStateAdapter extends TypeAdapter<SettingsState> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SettingsStateAdapter &&
+      other is TodoItemAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

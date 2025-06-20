@@ -1,8 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 
-class TodoItem {
+part 'todo_viewmodel.g.dart';
+
+@HiveType(typeId: 2) // Benzersiz bir typeId
+class TodoItem extends HiveObject {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String title;
+
+  @HiveField(2)
   final bool isDone;
 
   TodoItem({required this.id, required this.title, this.isDone = false});
@@ -26,28 +35,40 @@ class TodoState {
 }
 
 class TodoViewModel extends StateNotifier<TodoState> {
-  TodoViewModel() : super(TodoState());
+  late Box<TodoItem> _box;
+  static const String boxName = 'todos_box';
+
+  TodoViewModel() : super(TodoState()) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    _box = await Hive.openBox<TodoItem>(boxName);
+    state = state.copyWith(todos: _box.values.toList());
+  }
 
   void addTodo(String title) {
     final newTodo = TodoItem(
       id: DateTime.now().toIso8601String(),
       title: title,
     );
+    _box.put(newTodo.id, newTodo);
     state = state.copyWith(todos: [...state.todos, newTodo]);
   }
 
   void toggleTodo(String id) {
-    state = state.copyWith(
-      todos: state.todos
-          .map(
-            (todo) =>
-                todo.id == id ? todo.copyWith(isDone: !todo.isDone) : todo,
-          )
-          .toList(),
-    );
+    final todo = _box.get(id);
+    if (todo != null) {
+      final updatedTodo = todo.copyWith(isDone: !todo.isDone);
+      _box.put(id, updatedTodo);
+      state = state.copyWith(
+        todos: state.todos.map((t) => t.id == id ? updatedTodo : t).toList(),
+      );
+    }
   }
 
   void removeTodo(String id) {
+    _box.delete(id);
     state = state.copyWith(
       todos: state.todos.where((todo) => todo.id != id).toList(),
     );

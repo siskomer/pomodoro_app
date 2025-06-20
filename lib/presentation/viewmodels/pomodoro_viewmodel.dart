@@ -3,52 +3,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/pomodoro.dart';
 
 class PomodoroViewModel extends StateNotifier<Pomodoro> {
-  int pomodoroDuration; // saniye
-  int breakDuration; // saniye
+  final int pomodoroDuration;
+  final int breakDuration;
   Timer? _timer;
 
-  PomodoroViewModel({this.pomodoroDuration = 1500, this.breakDuration = 300})
-    : super(
-        Pomodoro(
-          duration: pomodoroDuration,
-          remaining: pomodoroDuration,
-          isRunning: false,
-        ),
-      );
+  PomodoroViewModel({
+    required this.pomodoroDuration,
+    required this.breakDuration,
+  }) : super(Pomodoro(duration: pomodoroDuration, remaining: pomodoroDuration));
 
   void start() {
-    if (state.isRunning) return;
-    state = Pomodoro(
-      duration: state.duration,
-      remaining: state.remaining,
-      isRunning: true,
-    );
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (state.remaining > 0 && state.isRunning) {
-        state = Pomodoro(
-          duration: state.duration,
-          remaining: state.remaining - 1,
-          isRunning: true,
-        );
-      } else {
-        timer.cancel();
-        state = Pomodoro(
-          duration: state.duration,
-          remaining: 0,
-          isRunning: false,
-        );
-      }
-    });
+    if (state.isRunning) {
+      pause();
+    } else {
+      _timer?.cancel();
+      state = state.copyWith(isRunning: true);
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (state.remaining > 0) {
+          state = state.copyWith(remaining: state.remaining - 1);
+        } else {
+          _timer?.cancel();
+          _switchMode();
+        }
+      });
+    }
   }
 
   void pause() {
-    if (!state.isRunning) return;
     _timer?.cancel();
-    state = Pomodoro(
-      duration: state.duration,
-      remaining: state.remaining,
-      isRunning: false,
-    );
+    state = state.copyWith(isRunning: false);
   }
 
   void reset() {
@@ -57,6 +40,18 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
       duration: pomodoroDuration,
       remaining: pomodoroDuration,
       isRunning: false,
+      isBreak: false,
+    );
+  }
+
+  void _switchMode() {
+    final bool wasBreak = state.isBreak;
+    final newDuration = wasBreak ? pomodoroDuration : breakDuration;
+    state = Pomodoro(
+      duration: newDuration,
+      remaining: newDuration,
+      isRunning: false,
+      isBreak: !wasBreak,
     );
   }
 

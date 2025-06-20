@@ -5,6 +5,7 @@ import 'presentation/theme.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'presentation/viewmodels/stats_viewmodel.dart';
 import 'presentation/viewmodels/settings_viewmodel.dart';
+import 'presentation/viewmodels/todo_viewmodel.dart';
 // import 'package:flutter_localizations/flutter_localizations.dart';
 // import 'generated/l10n.dart';
 
@@ -13,6 +14,8 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(PomodoroRecordAdapter());
   Hive.registerAdapter(SettingsStateAdapter());
+  Hive.registerAdapter(TodoItemAdapter());
+  await Hive.deleteBoxFromDisk('settings_box');
   runApp(const ProviderScope(child: MyApp()));
 }
 

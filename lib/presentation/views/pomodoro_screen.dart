@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pomodoro_app/domain/entities/pomodoro.dart';
-import '../viewmodels/pomodoro_viewmodel.dart';
+import 'package:pomodoro_app/presentation/viewmodels/pomodoro_viewmodel.dart';
 import '../providers/pomodoro_provider.dart';
 import '../providers/stats_provider.dart';
 import '../providers/settings_provider.dart';
+import '../viewmodels/settings_viewmodel.dart';
 import '../theme.dart';
+import 'dart:async';
 
-class PomodoroScreen extends ConsumerWidget {
+class PomodoroScreen extends ConsumerStatefulWidget {
   const PomodoroScreen({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<PomodoroScreen> createState() => _PomodoroScreenState();
+}
+
+class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
+  bool isFullFocusActive = false;
+  bool showInfo = true;
+  Timer? _infoTimer;
 
   String formatTime(int seconds) {
     final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
@@ -17,415 +28,236 @@ class PomodoroScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    _infoTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
+    if (settings == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     final pomodoro = ref.watch(pomodoroViewModelProvider(settings));
     final viewModel = ref.read(pomodoroViewModelProvider(settings).notifier);
     final statsViewModel = ref.read(statsProvider.notifier);
     final theme = Theme.of(context);
 
-    // Pomodoro tamamlandığında istatistiklere kayıt ekle
     ref.listen<Pomodoro>(pomodoroViewModelProvider(settings), (previous, next) {
-      if (next.remaining == 0 && next.isRunning == false) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final focusMinutes = (viewModel.pomodoroDuration / 60).round();
-          final breakMinutes = (viewModel.breakDuration / 60).round();
-          statsViewModel.addRecord(
-            focusMinutes: focusMinutes,
-            breakMinutes: breakMinutes,
-          );
-        });
+      if (previous != null &&
+          previous.remaining > 0 &&
+          next.remaining == 0 &&
+          !next.isRunning) {
+        final focusMinutes = (viewModel.pomodoroDuration / 60).round();
+        final breakMinutes = (viewModel.breakDuration / 60).round();
+        statsViewModel.addRecord(
+          focusMinutes: focusMinutes,
+          breakMinutes: breakMinutes,
+        );
       }
     });
 
-    if (settings.fullFocusMode) {
-      // TAM ODAKLANMA MODU: Siyah ekran, sadece sayaç ve dokunarak çıkış
+    if (isFullFocusActive) {
+      // TAM ODAKLANMA MODU (sadece başlatınca aktif)
       return Scaffold(
         backgroundColor: Colors.black,
         body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
-            // Settings'i de güncelle
-            ref.read(settingsProvider.notifier).setFullFocusMode(false);
+            setState(() {
+              isFullFocusActive = false;
+              showInfo = true;
+              _infoTimer?.cancel();
+            });
           },
           child: SafeArea(
-            child: Stack(
-              children: [
-                // Ana sayaç
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Timer Circle
-                      Container(
-                        width: 300,
-                        height: 300,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black,
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 280,
-                              height: 280,
-                              child: TweenAnimationBuilder<double>(
-                                tween: Tween<double>(
-                                  begin: 1.0,
-                                  end: pomodoro.remaining / pomodoro.duration,
-                                ),
-                                duration: const Duration(milliseconds: 500),
-                                builder: (context, value, child) {
-                                  return CircularProgressIndicator(
-                                    value: value,
-                                    strokeWidth: 8,
-                                    backgroundColor: Colors.white.withOpacity(
-                                      0.1,
-                                    ),
-                                    valueColor:
-                                        const AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
-                                        ),
-                                  );
-                                },
-                              ),
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  formatTime(pomodoro.remaining),
-                                  style: const TextStyle(
-                                    fontSize: 72,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.white,
-                                    letterSpacing: 4,
-                                    fontFamily: 'monospace',
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Odaklanma Zamanı',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white.withOpacity(0.8),
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 60),
-
-                      // Bilgilendirme yazısı
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Çıkmak için dokunun',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.7),
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ],
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    formatTime(pomodoro.remaining),
+                    style: const TextStyle(
+                      fontSize: 80,
+                      fontWeight: FontWeight.w300,
+                      color: Colors.white,
+                      fontFamily: 'monospace',
+                    ),
                   ),
-                ),
-
-                // Üst bilgi
-                Positioned(
-                  top: 20,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Container(
+                  const SizedBox(height: 80),
+                  if (showInfo)
+                    Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
+                        horizontal: 24,
+                        vertical: 12,
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      child: Text(
-                        'Tam Odaklanma Modu',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white.withOpacity(0.8),
-                          letterSpacing: 0.5,
-                        ),
+                      child: const Text(
+                        'Çıkmak için herhangi bir yere dokunun',
+                        style: TextStyle(color: Colors.white70),
                       ),
                     ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       );
     }
 
-    // Normal mod
+    // NORMAL MOD
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Modern App Bar
-            SliverAppBar(
-              expandedHeight: 80,
-              floating: false,
-              pinned: true,
-              backgroundColor: theme.colorScheme.background,
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_new,
-                  color: theme.colorScheme.onBackground,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                title: Text(
-                  'Pomodoro Sayacı',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: theme.colorScheme.onBackground,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                centerTitle: true,
-                titlePadding: const EdgeInsets.only(bottom: 16),
-              ),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(1),
-                child: Container(height: 1, color: const Color(0xFFE2E8F0)),
-              ),
-            ),
-
-            // Timer Section
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    // Timer Circle
-                    Container(
-                      width: 280,
-                      height: 280,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: AppTheme.primaryGradient,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withOpacity(0.3),
-                            blurRadius: 30,
-                            offset: const Offset(0, 15),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            width: 240,
-                            height: 240,
-                            child: TweenAnimationBuilder<double>(
-                              tween: Tween<double>(
-                                begin: 1.0,
-                                end: pomodoro.remaining / pomodoro.duration,
-                              ),
-                              duration: const Duration(milliseconds: 500),
-                              builder: (context, value, child) {
-                                return CircularProgressIndicator(
-                                  value: value,
-                                  strokeWidth: 6,
-                                  backgroundColor: Colors.white.withOpacity(
-                                    0.2,
-                                  ),
-                                  valueColor:
-                                      const AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                );
-                              },
-                            ),
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                formatTime(pomodoro.remaining),
-                                style: const TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
-                                  letterSpacing: 2,
-                                  fontFamily: 'monospace',
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Odaklanma Zamanı',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white.withOpacity(0.9),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Control Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Start/Pause Button
-                        Expanded(
-                          child: Container(
-                            height: 56,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: pomodoro.isRunning
-                                    ? AppTheme.warningGradient
-                                    : AppTheme.successGradient,
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      (pomodoro.isRunning
-                                              ? AppTheme.warningColor
-                                              : AppTheme.successColor)
-                                          .withOpacity(0.3),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(16),
-                                onTap: () {
-                                  if (pomodoro.isRunning) {
-                                    viewModel.pause();
-                                  } else {
-                                    viewModel.start();
-                                    print(
-                                      'Başlat butonuna basıldı, fullFocusMode: ${settings.fullFocusMode}',
-                                    ); // Debug print
-                                    if (settings.fullFocusMode) {
-                                      print(
-                                        'Odak modu açılıyor!',
-                                      ); // Debug print
-                                    } else {
-                                      print(
-                                        'Odak modu kapalı, normal modda kalıyor',
-                                      ); // Debug print
-                                    }
-                                  }
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      pomodoro.isRunning
-                                          ? Icons.pause
-                                          : Icons.play_arrow,
-                                      color: Colors.white,
-                                      size: 24,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      pomodoro.isRunning
-                                          ? 'Duraklat'
-                                          : 'Başlat',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 16),
-
-                        // Reset Button
-                        Container(
-                          height: 56,
-                          width: 56,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(
-                                  0xFF1E293B,
-                                ).withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: viewModel.reset,
-                              child: Icon(
-                                Icons.refresh,
-                                color: AppTheme.errorColor,
-                                size: 24,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Focus Mode Toggle - KALDIRILDI
-                    // Sadece ayarlardaki switch çalışacak
-                  ],
-                ),
-              ),
-            ),
-          ],
+      backgroundColor: const Color(0xFFF5F3FF),
+      appBar: AppBar(
+        title: Text(
+          'Pomodoro Sayacı',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        backgroundColor: const Color(0xFFF5F3FF),
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: theme.colorScheme.onBackground,
+          ),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+              AppTheme.modernCard(
+                backgroundColor: Colors.white,
+                child: _buildTimer(theme, pomodoro),
+              ),
+              const Spacer(),
+              _buildControls(viewModel, pomodoro, theme, settings),
+              const Spacer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimer(ThemeData theme, Pomodoro pomodoro) {
+    return SizedBox(
+      width: 300,
+      height: 300,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(
+          begin: 1.0,
+          end: pomodoro.duration > 0
+              ? pomodoro.remaining / pomodoro.duration
+              : 0,
+        ),
+        duration: const Duration(milliseconds: 500),
+        builder: (context, value, child) {
+          return Stack(
+            fit: StackFit.expand,
+            alignment: Alignment.center,
+            children: [
+              CircularProgressIndicator(
+                value: value,
+                strokeWidth: 12,
+                backgroundColor: theme.colorScheme.surfaceVariant,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  pomodoro.isBreak
+                      ? AppTheme.successColor
+                      : AppTheme.primaryColor,
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    formatTime(pomodoro.remaining),
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w300,
+                      color: theme.colorScheme.onBackground,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildControls(
+    PomodoroViewModel viewModel,
+    Pomodoro pomodoro,
+    ThemeData theme,
+    SettingsState? settings,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            if (!pomodoro.isRunning && settings!.fullFocusMode) {
+              setState(() {
+                isFullFocusActive = true;
+                showInfo = true;
+                _infoTimer?.cancel();
+                _infoTimer = Timer(const Duration(seconds: 5), () {
+                  if (mounted) {
+                    setState(() {
+                      showInfo = false;
+                    });
+                  }
+                });
+              });
+            }
+            viewModel.start();
+          },
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            backgroundColor: pomodoro.isBreak
+                ? AppTheme.successColor
+                : AppTheme.primaryColor,
+            minimumSize: const Size(72, 72),
+            padding: EdgeInsets.zero,
+            elevation: 2,
+          ),
+          child: Icon(
+            pomodoro.isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
+            size: 40,
+            color: theme.colorScheme.onPrimary,
+          ),
+        ),
+        const SizedBox(width: 24),
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: theme.colorScheme.surfaceVariant,
+          ),
+          child: IconButton(
+            onPressed: viewModel.reset,
+            icon: Icon(
+              Icons.refresh_rounded,
+              size: 32,
+              color: theme.colorScheme.onSurface,
+            ),
+            iconSize: 56,
+            splashRadius: 28,
+          ),
+        ),
+      ],
     );
   }
 }

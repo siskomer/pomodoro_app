@@ -12,8 +12,12 @@ class SettingsScreen extends ConsumerWidget {
     final settingsNotifier = ref.read(settingsProvider.notifier);
     final theme = Theme.of(context);
 
+    if (settings == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: const Color(0xFFE0F7FA),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -22,7 +26,7 @@ class SettingsScreen extends ConsumerWidget {
               expandedHeight: 80,
               floating: false,
               pinned: true,
-              backgroundColor: theme.colorScheme.background,
+              backgroundColor: const Color(0xFFE0F7FA),
               elevation: 0,
               leading: IconButton(
                 icon: Icon(
@@ -44,7 +48,10 @@ class SettingsScreen extends ConsumerWidget {
               ),
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(1),
-                child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+                child: Container(
+                  height: 1,
+                  color: theme.dividerColor.withOpacity(0.5),
+                ),
               ),
             ),
 
@@ -57,6 +64,7 @@ class SettingsScreen extends ConsumerWidget {
                   children: [
                     // Pomodoro Duration Setting
                     AppTheme.modernCard(
+                      backgroundColor: Colors.white,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -101,13 +109,14 @@ class SettingsScreen extends ConsumerWidget {
                           const SizedBox(height: 20),
                           SliderTheme(
                             data: SliderTheme.of(context).copyWith(
-                              activeTrackColor: AppTheme.primaryColor,
-                              inactiveTrackColor: const Color(0xFFE2E8F0),
-                              thumbColor: AppTheme.primaryColor,
-                              overlayColor: AppTheme.primaryColor.withOpacity(
+                              activeTrackColor: AppTheme.accentColor,
+                              inactiveTrackColor:
+                                  theme.colorScheme.surfaceVariant,
+                              thumbColor: AppTheme.accentColor,
+                              overlayColor: AppTheme.accentColor.withOpacity(
                                 0.1,
                               ),
-                              valueIndicatorColor: AppTheme.primaryColor,
+                              valueIndicatorColor: AppTheme.accentColor,
                               valueIndicatorTextStyle: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
@@ -155,6 +164,7 @@ class SettingsScreen extends ConsumerWidget {
 
                     // Break Duration Setting
                     AppTheme.modernCard(
+                      backgroundColor: Colors.white,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -199,13 +209,14 @@ class SettingsScreen extends ConsumerWidget {
                           const SizedBox(height: 20),
                           SliderTheme(
                             data: SliderTheme.of(context).copyWith(
-                              activeTrackColor: AppTheme.successColor,
-                              inactiveTrackColor: const Color(0xFFE2E8F0),
-                              thumbColor: AppTheme.successColor,
-                              overlayColor: AppTheme.successColor.withOpacity(
+                              activeTrackColor: AppTheme.accentColor,
+                              inactiveTrackColor:
+                                  theme.colorScheme.surfaceVariant,
+                              thumbColor: AppTheme.accentColor,
+                              overlayColor: AppTheme.accentColor.withOpacity(
                                 0.1,
                               ),
-                              valueIndicatorColor: AppTheme.successColor,
+                              valueIndicatorColor: AppTheme.accentColor,
                               valueIndicatorTextStyle: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
@@ -233,7 +244,7 @@ class SettingsScreen extends ConsumerWidget {
                               Text(
                                 '${settings.breakMinutes} dakika',
                                 style: theme.textTheme.titleMedium?.copyWith(
-                                  color: AppTheme.successColor,
+                                  color: AppTheme.primaryColor,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -253,6 +264,7 @@ class SettingsScreen extends ConsumerWidget {
 
                     // Focus Mode Setting
                     AppTheme.modernCard(
+                      backgroundColor: Colors.white,
                       child: Row(
                         children: [
                           Container(
@@ -289,9 +301,9 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                           Switch(
                             value: settings.fullFocusMode,
-                            onChanged: (value) {
-                              settingsNotifier.setFullFocusMode(value);
-                            },
+                            onChanged: (value) => ref
+                                .read(settingsProvider.notifier)
+                                .setFullFocusMode(value),
                             activeColor: AppTheme.accentColor,
                           ),
                         ],

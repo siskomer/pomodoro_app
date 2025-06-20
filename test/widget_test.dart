@@ -19,5 +19,5 @@ void main() {
 
 final pomodoroViewModelProvider =
     StateNotifierProvider<PomodoroViewModel, Pomodoro>((ref) {
-      return PomodoroViewModel();
+      return PomodoroViewModel(pomodoroDuration: 1500, breakDuration: 300);
     });

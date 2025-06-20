@@ -58,7 +58,7 @@ class DashboardScreen extends StatelessWidget {
         title: 'Ayarlar',
         subtitle: 'Uygulama ayarları',
         icon: Icons.settings_outlined,
-        gradient: [AppTheme.accentColor, AppTheme.secondaryColor],
+        gradient: [AppTheme.primaryColor, AppTheme.accentColor],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => SettingsScreen()),
