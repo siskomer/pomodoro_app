@@ -1,77 +1,348 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/settings_provider.dart';
+import '../theme.dart';
 
 class SettingsScreen extends ConsumerWidget {
+  const SettingsScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsAsync = ref.watch(settingsProvider);
-    final settingsViewModel = ref.read(settingsProvider.notifier);
+    final settings = ref.watch(settingsProvider);
+    final settingsNotifier = ref.read(settingsProvider.notifier);
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text('Ayarlar')),
-      body: settingsAsync.when(
-        data: (settings) => Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Pomodoro Süresi (dakika):',
-                style: TextStyle(fontSize: 18),
+      backgroundColor: theme.colorScheme.background,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Modern App Bar
+            SliverAppBar(
+              expandedHeight: 80,
+              floating: false,
+              pinned: true,
+              backgroundColor: theme.colorScheme.background,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: theme.colorScheme.onBackground,
+                ),
+                onPressed: () => Navigator.pop(context),
               ),
-              Slider(
-                value: settings.pomodoroMinutes.toDouble(),
-                min: 10,
-                max: 60,
-                divisions: 10,
-                label: settings.pomodoroMinutes.toString(),
-                onChanged: (value) =>
-                    settingsViewModel.setPomodoroMinutes((value ~/ 5) * 5),
-              ),
-              Text(
-                '${settings.pomodoroMinutes} dakika',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 32),
-              const Text(
-                'Mola Süresi (dakika):',
-                style: TextStyle(fontSize: 18),
-              ),
-              Slider(
-                value: settings.breakMinutes.toDouble(),
-                min: 5,
-                max: 30,
-                divisions: 5,
-                label: settings.breakMinutes.toString(),
-                onChanged: (value) =>
-                    settingsViewModel.setBreakMinutes((value ~/ 5) * 5),
-              ),
-              Text(
-                '${settings.breakMinutes} dakika',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Tam Odaklanma Modu',
-                    style: TextStyle(fontSize: 18),
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  'Ayarlar',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: theme.colorScheme.onBackground,
+                    fontWeight: FontWeight.w700,
                   ),
-                  Switch(
-                    value: settings.fullFocusMode,
-                    onChanged: (value) {
-                      settingsViewModel.setFullFocusMode(value);
-                    },
-                  ),
-                ],
+                ),
+                centerTitle: true,
+                titlePadding: const EdgeInsets.only(bottom: 16),
               ),
-              const SizedBox(height: 32),
-            ],
-          ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1),
+                child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+              ),
+            ),
+
+            // Settings Content
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Pomodoro Duration Setting
+                    AppTheme.modernCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.timer_outlined,
+                                  color: AppTheme.primaryColor,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Pomodoro Süresi',
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    Text(
+                                      'Odaklanma periyodu süresi',
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: const Color(0xFF64748B),
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              activeTrackColor: AppTheme.primaryColor,
+                              inactiveTrackColor: const Color(0xFFE2E8F0),
+                              thumbColor: AppTheme.primaryColor,
+                              overlayColor: AppTheme.primaryColor.withOpacity(
+                                0.1,
+                              ),
+                              valueIndicatorColor: AppTheme.primaryColor,
+                              valueIndicatorTextStyle: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            child: Slider(
+                              value: settings.pomodoroMinutes.toDouble(),
+                              min: 10,
+                              max: 60,
+                              divisions: 10,
+                              label: '${settings.pomodoroMinutes} dk',
+                              onChanged: (value) => settingsNotifier
+                                  .setPomodoroMinutes((value ~/ 5) * 5),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '10 dk',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                              Text(
+                                '${settings.pomodoroMinutes} dakika',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: AppTheme.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '60 dk',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Break Duration Setting
+                    AppTheme.modernCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.successColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.coffee_outlined,
+                                  color: AppTheme.successColor,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Mola Süresi',
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    Text(
+                                      'Kısa mola periyodu süresi',
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: const Color(0xFF64748B),
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              activeTrackColor: AppTheme.successColor,
+                              inactiveTrackColor: const Color(0xFFE2E8F0),
+                              thumbColor: AppTheme.successColor,
+                              overlayColor: AppTheme.successColor.withOpacity(
+                                0.1,
+                              ),
+                              valueIndicatorColor: AppTheme.successColor,
+                              valueIndicatorTextStyle: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            child: Slider(
+                              value: settings.breakMinutes.toDouble(),
+                              min: 5,
+                              max: 30,
+                              divisions: 5,
+                              label: '${settings.breakMinutes} dk',
+                              onChanged: (value) => settingsNotifier
+                                  .setBreakMinutes((value ~/ 5) * 5),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '5 dk',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                              Text(
+                                '${settings.breakMinutes} dakika',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: AppTheme.successColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '30 dk',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Focus Mode Setting
+                    AppTheme.modernCard(
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppTheme.accentColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              Icons.fullscreen_outlined,
+                              color: AppTheme.accentColor,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Tam Odaklanma Modu',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  'Tam ekran deneyim için',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Switch(
+                            value: settings.fullFocusMode,
+                            onChanged: (value) {
+                              settingsNotifier.setFullFocusMode(value);
+                            },
+                            activeColor: AppTheme.accentColor,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Info Section
+                    AppTheme.modernCard(
+                      backgroundColor: const Color(0xFFF0F9FF),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                color: AppTheme.accentColor,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Bilgi',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: AppTheme.accentColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Pomodoro tekniği, 25 dakikalık odaklanma periyotları ve 5 dakikalık molalarla çalışmanızı organize etmenize yardımcı olur.',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: const Color(0xFF475569),
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Bottom spacing
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          ],
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Hata: $e')),
       ),
     );
   }

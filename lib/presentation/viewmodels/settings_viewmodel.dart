@@ -10,6 +10,7 @@ class SettingsState extends HiveObject {
   final int breakMinutes;
   @HiveField(2)
   final bool fullFocusMode;
+
   SettingsState({
     this.pomodoroMinutes = 25,
     this.breakMinutes = 5,
@@ -29,40 +30,43 @@ class SettingsState extends HiveObject {
   }
 }
 
-class SettingsViewModel extends AsyncNotifier<SettingsState> {
+class SettingsNotifier extends StateNotifier<SettingsState> {
   static const String boxName = 'settings_box';
   late Box<SettingsState> _box;
 
-  @override
-  Future<SettingsState> build() async {
+  SettingsNotifier() : super(SettingsState()) {
+    _initializeSettings();
+  }
+
+  Future<void> _initializeSettings() async {
     _box = await Hive.openBox<SettingsState>(boxName);
     if (_box.isNotEmpty) {
-      return _box.get('settings')!;
+      final savedSettings = _box.get('settings');
+      if (savedSettings != null) {
+        state = savedSettings;
+      }
     } else {
       final defaultState = SettingsState();
       await _box.put('settings', defaultState);
-      return defaultState;
+      state = defaultState;
     }
   }
 
   Future<void> setPomodoroMinutes(int minutes) async {
-    final current = state.value ?? SettingsState();
-    final newState = current.copyWith(pomodoroMinutes: minutes);
-    state = AsyncData(newState);
+    final newState = state.copyWith(pomodoroMinutes: minutes);
+    state = newState;
     await _box.put('settings', newState);
   }
 
   Future<void> setBreakMinutes(int minutes) async {
-    final current = state.value ?? SettingsState();
-    final newState = current.copyWith(breakMinutes: minutes);
-    state = AsyncData(newState);
+    final newState = state.copyWith(breakMinutes: minutes);
+    state = newState;
     await _box.put('settings', newState);
   }
 
   Future<void> setFullFocusMode(bool value) async {
-    final current = state.value ?? SettingsState();
-    final newState = current.copyWith(fullFocusMode: value);
-    state = AsyncData(newState);
+    final newState = state.copyWith(fullFocusMode: value);
+    state = newState;
     await _box.put('settings', newState);
   }
 }

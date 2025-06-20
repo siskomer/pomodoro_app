@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import 'pomodoro_screen.dart';
 import 'stats_screen.dart';
 import 'todo_screen.dart';
@@ -10,11 +11,14 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final List<_DashboardItem> items = [
       _DashboardItem(
         title: 'Pomodoro Sayacı',
-        icon: Icons.timer,
-        color: Colors.blue,
+        subtitle: 'Odaklanma zamanı',
+        icon: Icons.timer_outlined,
+        gradient: AppTheme.primaryGradient,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => PomodoroScreen()),
@@ -22,8 +26,9 @@ class DashboardScreen extends StatelessWidget {
       ),
       _DashboardItem(
         title: 'İstatistikler',
-        icon: Icons.bar_chart,
-        color: Colors.green,
+        subtitle: 'Performansınızı takip edin',
+        icon: Icons.analytics_outlined,
+        gradient: AppTheme.successGradient,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => StatsScreen()),
@@ -31,8 +36,9 @@ class DashboardScreen extends StatelessWidget {
       ),
       _DashboardItem(
         title: 'Yapılacaklar',
-        icon: Icons.check_circle,
-        color: Colors.orange,
+        subtitle: 'Görevlerinizi yönetin',
+        icon: Icons.task_alt_outlined,
+        gradient: AppTheme.warningGradient,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => TodoScreen()),
@@ -40,8 +46,9 @@ class DashboardScreen extends StatelessWidget {
       ),
       _DashboardItem(
         title: 'Günün Sözü',
-        icon: Icons.format_quote,
-        color: Colors.purple,
+        subtitle: 'Motivasyon için',
+        icon: Icons.format_quote_outlined,
+        gradient: AppTheme.errorGradient,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => QuoteScreen()),
@@ -49,8 +56,9 @@ class DashboardScreen extends StatelessWidget {
       ),
       _DashboardItem(
         title: 'Ayarlar',
-        icon: Icons.settings,
-        color: Colors.grey,
+        subtitle: 'Uygulama ayarları',
+        icon: Icons.settings_outlined,
+        gradient: [AppTheme.accentColor, AppTheme.secondaryColor],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => SettingsScreen()),
@@ -59,14 +67,80 @@ class DashboardScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pomodoro App'), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 24,
-          mainAxisSpacing: 24,
-          children: items.map((item) => _DashboardCard(item: item)).toList(),
+      backgroundColor: theme.colorScheme.background,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Modern App Bar
+            SliverAppBar(
+              expandedHeight: 120,
+              floating: false,
+              pinned: true,
+              backgroundColor: theme.colorScheme.background,
+              elevation: 0,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  'Pomodoro App',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: theme.colorScheme.onBackground,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                centerTitle: true,
+                titlePadding: const EdgeInsets.only(bottom: 16),
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1),
+                child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+              ),
+            ),
+
+            // Welcome Section
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hoş geldiniz! 👋',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        color: theme.colorScheme.onBackground,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Bugün odaklanmaya hazır mısınız?',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Dashboard Grid
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.85,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _DashboardCard(item: items[index]),
+                  childCount: items.length,
+                ),
+              ),
+            ),
+
+            // Bottom spacing
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          ],
         ),
       ),
     );
@@ -75,47 +149,86 @@ class DashboardScreen extends StatelessWidget {
 
 class _DashboardItem {
   final String title;
+  final String subtitle;
   final IconData icon;
-  final Color color;
+  final List<Color> gradient;
   final VoidCallback onTap;
+
   _DashboardItem({
     required this.title,
+    required this.subtitle,
     required this.icon,
-    required this.color,
+    required this.gradient,
     required this.onTap,
   });
 }
 
 class _DashboardCard extends StatelessWidget {
   final _DashboardItem item;
+
   const _DashboardCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    final theme = Theme.of(context);
+
+    return GestureDetector(
       onTap: item.onTap,
-      borderRadius: BorderRadius.circular(20),
       child: Container(
         decoration: BoxDecoration(
-          color: item.color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: item.color, width: 2),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(item.icon, color: item.color, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              item.title,
-              style: TextStyle(
-                color: item.color,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
+          gradient: LinearGradient(
+            colors: item.gradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: item.gradient.first.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Icon
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(item.icon, color: Colors.white, size: 28),
+              ),
+
+              // Content
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.subtitle,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
