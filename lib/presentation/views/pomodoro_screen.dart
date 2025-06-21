@@ -69,13 +69,18 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    formatTime(pomodoro.remaining),
-                    style: const TextStyle(
-                      fontSize: 80,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.white,
-                      fontFamily: 'monospace',
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        formatTime(pomodoro.remaining),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w300,
+                          color: Colors.white,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 80),
@@ -194,14 +199,19 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    formatTime(pomodoro.remaining),
-                    style: theme.textTheme.displayLarge?.copyWith(
-                      fontFamily: 'monospace',
-                      fontWeight: FontWeight.w900,
-                      fontSize: 60,
-                      letterSpacing: 2,
-                      color: theme.colorScheme.onBackground,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        formatTime(pomodoro.remaining),
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                          color: theme.colorScheme.onBackground,
+                        ),
+                      ),
                     ),
                   ),
                 ],

@@ -311,14 +311,14 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
               const SizedBox(height: 24),
               StatCard(
                 title: 'total_focus_time'.tr(),
-                value: '$focusMinutes min',
+                value: '$focusMinutes ${"min_suffix".tr()}',
                 icon: Icons.access_time,
                 color: Colors.green,
               ),
               const SizedBox(height: 24),
               StatCard(
                 title: 'total_break_time'.tr(),
-                value: '$breakMinutes min',
+                value: '$breakMinutes ${"min_suffix".tr()}',
                 icon: Icons.coffee,
                 color: Colors.orange,
               ),
