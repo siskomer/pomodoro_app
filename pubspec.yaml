@@ -42,6 +42,7 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_local_notifications: any
   wakelock_plus: ^1.1.4
+  timezone: ^0.9.3
 
 dev_dependencies:
   flutter_test:

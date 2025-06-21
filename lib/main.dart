@@ -7,93 +7,29 @@ import 'presentation/viewmodels/stats_viewmodel.dart';
 import 'presentation/viewmodels/settings_viewmodel.dart';
 import 'presentation/viewmodels/todo_viewmodel.dart';
 import 'presentation/providers/theme_mode_provider.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'presentation/providers/pomodoro_provider.dart';
+import 'presentation/providers/stats_provider.dart';
+import 'domain/entities/pomodoro_record.dart';
 // import 'package:flutter_localizations/flutter_localizations.dart';
 // import 'generated/l10n.dart';
 
-class NotificationService {
-  static final NotificationService _instance = NotificationService._internal();
-  factory NotificationService() => _instance;
-  NotificationService._internal();
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  Future<void> init() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-          requestSoundPermission: true,
-          requestBadgePermission: true,
-          requestAlertPermission: true,
-        );
-
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: initializationSettingsIOS,
-        );
-
-    // Create Android Notification Channel
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(
-          const AndroidNotificationChannel(
-            'pomodoro_channel',
-            'Pomodoro Bildirimleri',
-            description: 'Pomodoro ve mola bildirimleri',
-            importance: Importance.max,
-            playSound: true,
-          ),
-        );
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  Future<void> showNotification({
-    int id = 0,
-    String? title,
-    String? body,
-  }) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-          'pomodoro_channel',
-          'Pomodoro Bildirimleri',
-          channelDescription: 'Pomodoro ve mola bildirimleri',
-          importance: Importance.max,
-          priority: Priority.high,
-          showWhen: false,
-          playSound: true,
-        );
-    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
-        DarwinNotificationDetails(presentSound: true);
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics,
-    );
-    await flutterLocalNotificationsPlugin.show(
-      id,
-      title,
-      body,
-      platformChannelSpecifics,
-    );
-  }
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final container = ProviderContainer();
+
   await Hive.initFlutter();
   Hive.registerAdapter(PomodoroRecordAdapter());
   Hive.registerAdapter(SettingsStateAdapter());
   Hive.registerAdapter(TodoItemAdapter());
   Hive.registerAdapter(AppThemeModeAdapter());
-  await NotificationService().init();
+
+  // Repository'leri ve servisleri başlat
+  await container.read(notificationServiceProvider).init();
+  await container.read(statsRepositoryProvider).init();
+
   await Hive.deleteBoxFromDisk('settings_box');
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(parent: container, child: const MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

@@ -1,15 +1,24 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/pomodoro.dart';
+import '../../services/notification_service.dart';
+import 'stats_viewmodel.dart';
+import '../providers/stats_provider.dart';
 
 class PomodoroViewModel extends StateNotifier<Pomodoro> {
   final int pomodoroDuration;
   final int breakDuration;
+  final NotificationService notificationService;
+  final bool notificationEnabled;
+  final Function read;
   Timer? _timer;
 
   PomodoroViewModel({
     required this.pomodoroDuration,
     required this.breakDuration,
+    required this.notificationService,
+    required this.notificationEnabled,
+    required this.read,
   }) : super(Pomodoro(duration: pomodoroDuration, remaining: pomodoroDuration));
 
   void start() {
@@ -48,8 +57,30 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
       } else {
         _timer?.cancel();
         state = state.copyWith(isRunning: false);
+        _onTimerComplete();
       }
     });
+  }
+
+  void _onTimerComplete() {
+    if (!state.isBreak) {
+      final statsViewModel = read(statsProvider.notifier);
+      statsViewModel.addRecord(
+        focusMinutes: (pomodoroDuration / 60).round(),
+        breakMinutes: (breakDuration / 60).round(),
+      );
+    }
+    _notifyCompletion();
+  }
+
+  void _notifyCompletion() {
+    if (!notificationEnabled) return;
+
+    final title = state.isBreak ? 'Mola Bitti!' : 'Pomodoro Tamamlandı!';
+    final body = state.isBreak
+        ? 'Şimdi çalışma zamanı.'
+        : 'Harika iş! Kısa bir mola ver.';
+    notificationService.showNotification(id: 0, title: title, body: body);
   }
 
   void _switchModeAndStart() {

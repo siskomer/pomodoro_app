@@ -20,8 +20,8 @@ class SettingsStateAdapter extends TypeAdapter<SettingsState> {
       pomodoroMinutes: fields[0] as int,
       breakMinutes: fields[1] as int,
       fullFocusMode: fields[2] as bool,
-      notificationEnabled: fields[3] as bool? ?? true,
-      keepScreenOn: fields[4] as bool? ?? false,
+      notificationEnabled: fields[3] as bool,
+      keepScreenOn: fields[4] as bool,
     );
   }
 

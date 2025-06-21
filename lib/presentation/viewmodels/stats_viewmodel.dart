@@ -1,21 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
-part 'stats_viewmodel.g.dart';
-
-@HiveType(typeId: 0)
-class PomodoroRecord extends HiveObject {
-  @HiveField(0)
-  final DateTime date;
-  @HiveField(1)
-  final int focusMinutes;
-  @HiveField(2)
-  final int breakMinutes;
-  PomodoroRecord({
-    required this.date,
-    required this.focusMinutes,
-    required this.breakMinutes,
-  });
-}
+import '../../domain/entities/pomodoro_record.dart';
+import '../../domain/repositories/stats_repository.dart';
 
 class StatsState {
   final List<PomodoroRecord> records;
@@ -45,17 +30,14 @@ class StatsState {
 }
 
 class StatsViewModel extends StateNotifier<StatsState> {
-  static const String boxName = 'pomodoro_stats';
-  late Box<PomodoroRecord> _box;
+  final StatsRepository _repository;
 
-  StatsViewModel() : super(StatsState()) {
+  StatsViewModel(this._repository) : super(StatsState()) {
     _init();
   }
 
-  Future<void> _init() async {
-    _box = await Hive.openBox<PomodoroRecord>(boxName);
-    state = StatsState(records: _box.values.toList());
-    print('[STATS] Kutu başlatıldı. ${_box.length} kayıt bulundu.');
+  void _init() {
+    state = StatsState(records: _repository.getRecords());
   }
 
   Future<void> addRecord({
@@ -67,8 +49,7 @@ class StatsViewModel extends StateNotifier<StatsState> {
       focusMinutes: focusMinutes,
       breakMinutes: breakMinutes,
     );
-    await _box.add(record);
-    state = StatsState(records: _box.values.toList());
-    print('[STATS] Yeni kayıt eklendi. Toplam kayıt: ${state.records.length}');
+    await _repository.addRecord(record);
+    state = StatsState(records: _repository.getRecords());
   }
 }

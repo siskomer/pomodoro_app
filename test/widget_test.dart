@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pomodoro_app/main.dart';
 import 'package:pomodoro_app/domain/entities/pomodoro.dart';
 import 'package:pomodoro_app/presentation/viewmodels/pomodoro_viewmodel.dart';
+import 'package:pomodoro_app/services/notification_service.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -19,5 +20,11 @@ void main() {
 
 final pomodoroViewModelProvider =
     StateNotifierProvider<PomodoroViewModel, Pomodoro>((ref) {
-      return PomodoroViewModel(pomodoroDuration: 1500, breakDuration: 300);
+      return PomodoroViewModel(
+        pomodoroDuration: 1500,
+        breakDuration: 300,
+        notificationService: NotificationService(),
+        notificationEnabled: false,
+        read: ref.read,
+      );
     });

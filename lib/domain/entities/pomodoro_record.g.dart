@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'stats_viewmodel.dart';
+part of 'pomodoro_record.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator

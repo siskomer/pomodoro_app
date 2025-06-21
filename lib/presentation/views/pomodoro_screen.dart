@@ -8,7 +8,6 @@ import '../providers/settings_provider.dart';
 import '../viewmodels/settings_viewmodel.dart';
 import '../theme.dart';
 import 'dart:async';
-import '../../main.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class PomodoroScreen extends ConsumerStatefulWidget {
@@ -47,35 +46,8 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
     final theme = Theme.of(context);
 
     ref.listen<Pomodoro>(pomodoroViewModelProvider(settings), (previous, next) {
-      if (previous != null &&
-          !previous.isBreak &&
-          previous.remaining > 0 &&
-          next.remaining == 0 &&
-          !next.isRunning) {
-        final focusMinutes = (viewModel.pomodoroDuration / 60).round();
-        final breakMinutes = (viewModel.breakDuration / 60).round();
-        statsViewModel.addRecord(
-          focusMinutes: focusMinutes,
-          breakMinutes: breakMinutes,
-        );
-        if (settings.notificationEnabled) {
-          NotificationService().showNotification(
-            title: 'Pomodoro tamamlandı!',
-            body: 'Tebrikler! Şimdi kısa bir molayı hak ettin.',
-          );
-        }
-      } else if (previous != null &&
-          previous.isBreak &&
-          previous.remaining > 0 &&
-          next.remaining == 0 &&
-          !next.isRunning) {
-        if (settings.notificationEnabled) {
-          NotificationService().showNotification(
-            title: 'Mola bitti!',
-            body: 'Tekrar odaklanmaya hazır mısın?',
-          );
-        }
-      }
+      // Bu alan artık ViewModel tarafından yönetildiği için boş bırakılabilir.
+      // Gelecekte sadece UI ile ilgili state dinlemeleri için kullanılabilir.
     });
 
     if (isFullFocusActive) {
