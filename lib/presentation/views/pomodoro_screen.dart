@@ -9,6 +9,7 @@ import '../../domain/entities/settings_state.dart';
 import '../theme.dart';
 import 'dart:async';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PomodoroScreen extends ConsumerStatefulWidget {
   const PomodoroScreen({Key? key}) : super(key: key);
@@ -88,8 +89,8 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: const Text(
-                        'Çıkmak için herhangi bir yere dokunun',
+                      child: Text(
+                        'exit_full_focus_prompt'.tr(),
                         style: TextStyle(color: Colors.white70),
                       ),
                     ),
@@ -106,7 +107,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         title: Text(
-          'Pomodoro Sayacı',
+          'pomodoro_timer'.tr(),
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w700,
           ),

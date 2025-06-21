@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'presentation/views/dashboard_screen.dart';
@@ -19,6 +20,7 @@ import 'domain/entities/todo_item.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
   final container = ProviderContainer();
 
@@ -34,7 +36,17 @@ void main() async {
   await container.read(settingsRepositoryProvider).init();
   await container.read(todoRepositoryProvider).init();
 
-  runApp(ProviderScope(parent: container, child: const MyApp()));
+  runApp(
+    ProviderScope(
+      parent: container,
+      child: EasyLocalization(
+        supportedLocales: const [Locale('en', 'US'), Locale('tr', 'TR')],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('en', 'US'),
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {
@@ -55,7 +67,10 @@ class MyApp extends ConsumerWidget {
         themeMode = ThemeMode.system;
     }
     return MaterialApp(
-      title: 'Pomodoro App',
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      title: 'app_title'.tr(),
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
@@ -159,8 +174,8 @@ class _SplashScreenState extends State<SplashScreen>
                         const SizedBox(height: 32),
 
                         // App Name
-                        const Text(
-                          'Pomodoro App',
+                        Text(
+                          'app_title'.tr(),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 32,
@@ -173,7 +188,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                         // Subtitle
                         Text(
-                          'Odaklanma zamanı',
+                          'splash_subtitle'.tr(),
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.8),
                             fontSize: 16,

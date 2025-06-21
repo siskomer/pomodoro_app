@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/stats_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 enum StatsPeriod { daily, weekly, monthly }
 
@@ -158,13 +159,13 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
                         final days = [
-                          'Pzt',
-                          'Sal',
-                          'Çar',
-                          'Per',
-                          'Cum',
-                          'Cmt',
-                          'Paz',
+                          'monday_short'.tr(),
+                          'tuesday_short'.tr(),
+                          'wednesday_short'.tr(),
+                          'thursday_short'.tr(),
+                          'friday_short'.tr(),
+                          'saturday_short'.tr(),
+                          'sunday_short'.tr(),
                         ];
                         if (value.toInt() >= 0 && value.toInt() < days.length) {
                           return Padding(
@@ -258,12 +259,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        title: Text(
-          'İstatistikler',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        title: Text('stats'.tr()),
         backgroundColor: theme.colorScheme.background,
         elevation: 0,
         centerTitle: true,
@@ -275,57 +271,54 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ChoiceChip(
-                    label: const Text('Günlük'),
-                    selected: _selectedPeriod == StatsPeriod.daily,
-                    onSelected: (_) =>
-                        setState(() => _selectedPeriod = StatsPeriod.daily),
+              SegmentedButton<StatsPeriod>(
+                segments: <ButtonSegment<StatsPeriod>>[
+                  ButtonSegment(
+                    value: StatsPeriod.daily,
+                    label: Text('daily'.tr()),
                   ),
-                  const SizedBox(width: 12),
-                  ChoiceChip(
-                    label: const Text('Haftalık'),
-                    selected: _selectedPeriod == StatsPeriod.weekly,
-                    onSelected: (_) =>
-                        setState(() => _selectedPeriod = StatsPeriod.weekly),
+                  ButtonSegment(
+                    value: StatsPeriod.weekly,
+                    label: Text('weekly'.tr()),
                   ),
-                  const SizedBox(width: 12),
-                  ChoiceChip(
-                    label: const Text('Aylık'),
-                    selected: _selectedPeriod == StatsPeriod.monthly,
-                    onSelected: (_) =>
-                        setState(() => _selectedPeriod = StatsPeriod.monthly),
+                  ButtonSegment(
+                    value: StatsPeriod.monthly,
+                    label: Text('monthly'.tr()),
                   ),
                 ],
+                selected: <StatsPeriod>{_selectedPeriod},
+                onSelectionChanged: (Set<StatsPeriod> newSelection) {
+                  setState(() {
+                    _selectedPeriod = newSelection.first;
+                  });
+                },
               ),
               const SizedBox(height: 32),
               buildBarChart(stats),
               const SizedBox(height: 32),
               StatCard(
-                title: 'Tamamlanan Pomodoro',
+                title: 'total_pomodoros'.tr(),
                 value: pomodoros.toString(),
                 icon: Icons.timer,
                 color: Colors.blue,
               ),
               const SizedBox(height: 24),
               StatCard(
-                title: 'Toplam Odaklanma (dk)',
-                value: focusMinutes.toString(),
+                title: 'total_focus_time'.tr(),
+                value: '$focusMinutes min',
                 icon: Icons.access_time,
                 color: Colors.green,
               ),
               const SizedBox(height: 24),
               StatCard(
-                title: 'Toplam Mola (dk)',
-                value: breakMinutes.toString(),
+                title: 'total_break_time'.tr(),
+                value: '$breakMinutes min',
                 icon: Icons.coffee,
                 color: Colors.orange,
               ),

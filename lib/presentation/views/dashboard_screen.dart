@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme.dart';
 import 'pomodoro_screen.dart';
 import 'stats_screen.dart';
@@ -6,16 +8,16 @@ import 'todo_screen.dart';
 import 'quote_screen.dart';
 import 'settings_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     final List<_DashboardItem> items = [
       _DashboardItem(
-        title: 'Pomodoro Sayacı',
+        title: 'pomodoro_timer'.tr(),
         icon: Icons.timer_outlined,
         gradient: AppTheme.primaryGradient,
         onTap: () => Navigator.push(
@@ -24,7 +26,7 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
       _DashboardItem(
-        title: 'İstatistikler',
+        title: 'stats'.tr(),
         icon: Icons.analytics_outlined,
         gradient: AppTheme.successGradient,
         onTap: () => Navigator.push(
@@ -33,7 +35,7 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
       _DashboardItem(
-        title: 'Yapılacaklar',
+        title: 'todo'.tr(),
         icon: Icons.task_alt_outlined,
         gradient: AppTheme.warningGradient,
         onTap: () => Navigator.push(
@@ -42,7 +44,7 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
       _DashboardItem(
-        title: 'Günün Sözü',
+        title: 'quote_title'.tr(),
         icon: Icons.format_quote_outlined,
         gradient: AppTheme.errorGradient,
         onTap: () => Navigator.push(
@@ -51,7 +53,7 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
       _DashboardItem(
-        title: 'Ayarlar',
+        title: 'settings'.tr(),
         icon: Icons.settings_outlined,
         gradient: [AppTheme.primaryColor, AppTheme.accentColor],
         onTap: () => Navigator.push(
@@ -75,7 +77,7 @@ class DashboardScreen extends StatelessWidget {
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(
-                  'Pomodoro App',
+                  'app_title'.tr(),
                   style: theme.textTheme.headlineSmall?.copyWith(
                     color: theme.colorScheme.onBackground,
                     fontWeight: FontWeight.w800,
@@ -98,7 +100,7 @@ class DashboardScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hoş geldiniz! 👋',
+                      'welcome_back'.tr(),
                       style: theme.textTheme.headlineMedium?.copyWith(
                         color: theme.colorScheme.onBackground,
                         fontWeight: FontWeight.w700,
@@ -106,7 +108,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Bugün odaklanmaya hazır mısınız?',
+                      'ready_to_focus_today'.tr(),
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: const Color(0xFF64748B),
                       ),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/settings_provider.dart';
@@ -41,7 +42,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(
-                  'Ayarlar',
+                  'settings'.tr(),
                   style: theme.textTheme.headlineSmall?.copyWith(
                     color: theme.colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
@@ -92,14 +93,14 @@ class SettingsScreen extends ConsumerWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Pomodoro Süresi',
+                                      'pomodoro_duration'.tr(),
                                       style: theme.textTheme.titleMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
                                           ),
                                     ),
                                     Text(
-                                      'Odaklanma periyodu süresi',
+                                      'focus_period_subtitle'.tr(),
                                       style: theme.textTheme.bodyMedium
                                           ?.copyWith(
                                             color: theme.colorScheme.onSurface
@@ -132,7 +133,8 @@ class SettingsScreen extends ConsumerWidget {
                               min: 10,
                               max: 60,
                               divisions: 10,
-                              label: '${settings.pomodoroMinutes} dk',
+                              label:
+                                  '${settings.pomodoroMinutes} ${"minutes".tr()}',
                               onChanged: (value) => settingsNotifier
                                   .setPomodoroMinutes((value ~/ 5) * 5),
                             ),
@@ -141,21 +143,21 @@ class SettingsScreen extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '10 dk',
+                                '10${"min_suffix".tr()}',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurface
                                       .withOpacity(0.7),
                                 ),
                               ),
                               Text(
-                                '${settings.pomodoroMinutes} dakika',
+                                '${settings.pomodoroMinutes} ${"minutes".tr()}',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               Text(
-                                '60 dk',
+                                '60${"min_suffix".tr()}',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurface
                                       .withOpacity(0.7),
@@ -195,14 +197,14 @@ class SettingsScreen extends ConsumerWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Mola Süresi',
+                                      'break_duration'.tr(),
                                       style: theme.textTheme.titleMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
                                           ),
                                     ),
                                     Text(
-                                      'Kısa mola periyodu süresi',
+                                      'break_period_subtitle'.tr(),
                                       style: theme.textTheme.bodyMedium
                                           ?.copyWith(
                                             color: theme.colorScheme.onSurface
@@ -235,7 +237,8 @@ class SettingsScreen extends ConsumerWidget {
                               min: 5,
                               max: 30,
                               divisions: 5,
-                              label: '${settings.breakMinutes} dk',
+                              label:
+                                  '${settings.breakMinutes} ${"minutes".tr()}',
                               onChanged: (value) => settingsNotifier
                                   .setBreakMinutes((value ~/ 5) * 5),
                             ),
@@ -244,21 +247,21 @@ class SettingsScreen extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '5 dk',
+                                '5${"min_suffix".tr()}',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurface
                                       .withOpacity(0.7),
                                 ),
                               ),
                               Text(
-                                '${settings.breakMinutes} dakika',
+                                '${settings.breakMinutes} ${"minutes".tr()}',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               Text(
-                                '30 dk',
+                                '30${"min_suffix".tr()}',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurface
                                       .withOpacity(0.7),
@@ -295,13 +298,13 @@ class SettingsScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Tam Odaklanma Modu',
+                                  'full_focus_mode'.tr(),
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 Text(
-                                  'Tam ekran deneyim için',
+                                  'full_focus_mode_subtitle'.tr(),
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: theme.colorScheme.onSurface
                                         .withOpacity(0.7),
@@ -338,7 +341,7 @@ class SettingsScreen extends ConsumerWidget {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                'Tema',
+                                'theme'.tr(),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -351,21 +354,21 @@ class SettingsScreen extends ConsumerWidget {
                             groupValue: themeMode,
                             onChanged: (v) =>
                                 themeModeNotifier.setTheme(AppThemeMode.system),
-                            title: const Text('Sistem temasını kullan'),
+                            title: Text('use_system_theme'.tr()),
                           ),
                           RadioListTile<AppThemeMode>(
                             value: AppThemeMode.light,
                             groupValue: themeMode,
                             onChanged: (v) =>
                                 themeModeNotifier.setTheme(AppThemeMode.light),
-                            title: const Text('Açık tema'),
+                            title: Text('light_theme'.tr()),
                           ),
                           RadioListTile<AppThemeMode>(
                             value: AppThemeMode.dark,
                             groupValue: themeMode,
                             onChanged: (v) =>
                                 themeModeNotifier.setTheme(AppThemeMode.dark),
-                            title: const Text('Koyu tema'),
+                            title: Text('dark_theme'.tr()),
                           ),
                         ],
                       ),
@@ -388,7 +391,7 @@ class SettingsScreen extends ConsumerWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Bilgi',
+                                'information'.tr(),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   color: theme.colorScheme.secondary,
                                   fontWeight: FontWeight.w600,
@@ -398,7 +401,7 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Pomodoro tekniği, 25 dakikalık odaklanma periyotları ve 5 dakikalık molalarla çalışmanızı organize etmenize yardımcı olur.',
+                            'pomodoro_info_text'.tr(),
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onSurface,
                               height: 1.5,
@@ -414,7 +417,7 @@ class SettingsScreen extends ConsumerWidget {
                     AppTheme.modernCard(
                       backgroundColor: theme.cardColor,
                       child: ListTile(
-                        title: const Text('Bildirimleri Aç'),
+                        title: Text('enable_notifications'.tr()),
                         trailing: Switch(
                           value: settings.notificationEnabled ?? true,
                           onChanged: (value) async {
@@ -432,7 +435,7 @@ class SettingsScreen extends ConsumerWidget {
                     AppTheme.modernCard(
                       backgroundColor: theme.cardColor,
                       child: ListTile(
-                        title: const Text('Sayaç çalışırken ekranı açık tut'),
+                        title: Text('keep_screen_on'.tr()),
                         trailing: Switch(
                           value: settings.keepScreenOn ?? false,
                           onChanged: (value) async {
@@ -441,6 +444,73 @@ class SettingsScreen extends ConsumerWidget {
                                 .setKeepScreenOn(value);
                           },
                         ),
+                      ),
+                    ),
+
+                    // Language Setting Card
+                    const SizedBox(height: 16),
+                    AppTheme.modernCard(
+                      backgroundColor: theme.cardColor,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'language'.tr(),
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          SegmentedButton<Locale>(
+                            segments: <ButtonSegment<Locale>>[
+                              ButtonSegment<Locale>(
+                                value: const Locale('en', 'US'),
+                                label: Text(
+                                  'English',
+                                  style: TextStyle(
+                                    color:
+                                        context.locale ==
+                                            const Locale('en', 'US')
+                                        ? theme.colorScheme.onPrimary
+                                        : theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
+                              ButtonSegment<Locale>(
+                                value: const Locale('tr', 'TR'),
+                                label: Text(
+                                  'Türkçe',
+                                  style: TextStyle(
+                                    color:
+                                        context.locale ==
+                                            const Locale('tr', 'TR')
+                                        ? theme.colorScheme.onPrimary
+                                        : theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            selected: <Locale>{context.locale},
+                            onSelectionChanged: (Set<Locale> newSelection) {
+                              context.setLocale(newSelection.first);
+                            },
+                            style: SegmentedButton.styleFrom(
+                              backgroundColor: theme.colorScheme.surfaceVariant,
+                              foregroundColor: theme.colorScheme.onSurface,
+                              selectedBackgroundColor:
+                                  theme.colorScheme.primary,
+                              selectedForegroundColor:
+                                  theme.colorScheme.onPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/quote_provider.dart';
@@ -6,13 +7,14 @@ import '../theme.dart';
 class QuoteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final quoteState = ref.watch(quoteProvider);
-    final quoteViewModel = ref.read(quoteProvider.notifier);
+    final locale = context.locale;
+    final quoteState = ref.watch(quoteProvider(locale));
+    final quoteViewModel = ref.read(quoteProvider(locale).notifier);
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        title: const Text('Günün Sözü'),
+        title: Text('quote_title'.tr()),
         backgroundColor: theme.colorScheme.background,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.colorScheme.error),
@@ -53,7 +55,7 @@ class QuoteScreen extends ConsumerWidget {
                   ElevatedButton.icon(
                     onPressed: quoteViewModel.randomQuote,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Yeni Söz'),
+                    label: Text('new_quote'.tr()),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.error,
                       foregroundColor: Colors.white,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/todo_provider.dart';
@@ -48,7 +49,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
               ),
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(
-                  'Yapılacaklar',
+                  'todo'.tr(),
                   style: theme.textTheme.headlineSmall?.copyWith(
                     color: theme.colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
@@ -81,7 +82,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            'Yeni Görev Ekle',
+                            'add_new_task'.tr(),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -99,7 +100,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                                 color: theme.colorScheme.onSurface,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Görev açıklaması...',
+                                hintText: 'task_description'.tr(),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide.none,
@@ -244,7 +245,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                                 if (todo.isDone) ...[
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Tamamlandı',
+                                    'completed'.tr(),
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.secondary,
                                       fontWeight: FontWeight.w500,
