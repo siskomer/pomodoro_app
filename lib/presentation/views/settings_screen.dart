@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/settings_provider.dart';
 import '../theme.dart';
 import '../providers/theme_mode_provider.dart';
+import '../../main.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -404,6 +405,42 @@ class SettingsScreen extends ConsumerWidget {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Notification Setting
+                    AppTheme.modernCard(
+                      backgroundColor: theme.cardColor,
+                      child: ListTile(
+                        title: const Text('Bildirimleri Aç'),
+                        trailing: Switch(
+                          value: settings.notificationEnabled ?? true,
+                          onChanged: (value) async {
+                            await ref
+                                .read(settingsProvider.notifier)
+                                .setNotificationEnabled(value);
+                          },
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Keep Screen On Setting
+                    AppTheme.modernCard(
+                      backgroundColor: theme.cardColor,
+                      child: ListTile(
+                        title: const Text('Sayaç çalışırken ekranı açık tut'),
+                        trailing: Switch(
+                          value: settings.keepScreenOn ?? false,
+                          onChanged: (value) async {
+                            await ref
+                                .read(settingsProvider.notifier)
+                                .setKeepScreenOn(value);
+                          },
+                        ),
                       ),
                     ),
                   ],

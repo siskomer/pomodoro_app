@@ -15,17 +15,13 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
   void start() {
     if (state.isRunning) {
       pause();
+      return;
+    }
+
+    if (state.remaining == 0) {
+      _switchModeAndStart();
     } else {
-      _timer?.cancel();
-      state = state.copyWith(isRunning: true);
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (state.remaining > 0) {
-          state = state.copyWith(remaining: state.remaining - 1);
-        } else {
-          _timer?.cancel();
-          _switchMode();
-        }
-      });
+      _startTimer();
     }
   }
 
@@ -44,15 +40,30 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
     );
   }
 
-  void _switchMode() {
+  void _startTimer() {
+    state = state.copyWith(isRunning: true);
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (state.remaining > 0) {
+        state = state.copyWith(remaining: state.remaining - 1);
+      } else {
+        _timer?.cancel();
+        state = state.copyWith(isRunning: false);
+      }
+    });
+  }
+
+  void _switchModeAndStart() {
     final bool wasBreak = state.isBreak;
     final newDuration = wasBreak ? pomodoroDuration : breakDuration;
+
     state = Pomodoro(
       duration: newDuration,
       remaining: newDuration,
       isRunning: false,
       isBreak: !wasBreak,
     );
+
+    _startTimer();
   }
 
   @override

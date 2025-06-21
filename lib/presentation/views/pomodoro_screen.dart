@@ -8,6 +8,8 @@ import '../providers/settings_provider.dart';
 import '../viewmodels/settings_viewmodel.dart';
 import '../theme.dart';
 import 'dart:async';
+import '../../main.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class PomodoroScreen extends ConsumerStatefulWidget {
   const PomodoroScreen({Key? key}) : super(key: key);
@@ -46,6 +48,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
 
     ref.listen<Pomodoro>(pomodoroViewModelProvider(settings), (previous, next) {
       if (previous != null &&
+          !previous.isBreak &&
           previous.remaining > 0 &&
           next.remaining == 0 &&
           !next.isRunning) {
@@ -55,6 +58,23 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
           focusMinutes: focusMinutes,
           breakMinutes: breakMinutes,
         );
+        if (settings.notificationEnabled) {
+          NotificationService().showNotification(
+            title: 'Pomodoro tamamlandı!',
+            body: 'Tebrikler! Şimdi kısa bir molayı hak ettin.',
+          );
+        }
+      } else if (previous != null &&
+          previous.isBreak &&
+          previous.remaining > 0 &&
+          next.remaining == 0 &&
+          !next.isRunning) {
+        if (settings.notificationEnabled) {
+          NotificationService().showNotification(
+            title: 'Mola bitti!',
+            body: 'Tekrar odaklanmaya hazır mısın?',
+          );
+        }
       }
     });
 
@@ -245,6 +265,11 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                 });
               });
             }
+            if (settings != null && settings.keepScreenOn) {
+              WakelockPlus.enable();
+            } else {
+              WakelockPlus.disable();
+            }
             viewModel.start();
           },
           style: ElevatedButton.styleFrom(
@@ -269,7 +294,10 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
             color: theme.colorScheme.surfaceVariant,
           ),
           child: IconButton(
-            onPressed: viewModel.reset,
+            onPressed: () {
+              WakelockPlus.disable();
+              viewModel.reset();
+            },
             icon: Icon(
               Icons.refresh_rounded,
               size: 32,

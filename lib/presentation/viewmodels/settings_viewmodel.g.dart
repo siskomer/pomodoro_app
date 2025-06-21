@@ -20,19 +20,25 @@ class SettingsStateAdapter extends TypeAdapter<SettingsState> {
       pomodoroMinutes: fields[0] as int,
       breakMinutes: fields[1] as int,
       fullFocusMode: fields[2] as bool,
+      notificationEnabled: fields[3] as bool? ?? true,
+      keepScreenOn: fields[4] as bool? ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, SettingsState obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.pomodoroMinutes)
       ..writeByte(1)
       ..write(obj.breakMinutes)
       ..writeByte(2)
-      ..write(obj.fullFocusMode);
+      ..write(obj.fullFocusMode)
+      ..writeByte(3)
+      ..write(obj.notificationEnabled)
+      ..writeByte(4)
+      ..write(obj.keepScreenOn);
   }
 
   @override

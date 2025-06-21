@@ -55,19 +55,20 @@ class StatsViewModel extends StateNotifier<StatsState> {
   Future<void> _init() async {
     _box = await Hive.openBox<PomodoroRecord>(boxName);
     state = StatsState(records: _box.values.toList());
+    print('[STATS] Kutu başlatıldı. ${_box.length} kayıt bulundu.');
   }
 
   Future<void> addRecord({
     required int focusMinutes,
     required int breakMinutes,
   }) async {
-    final now = DateTime.now();
     final record = PomodoroRecord(
-      date: now,
+      date: DateTime.now(),
       focusMinutes: focusMinutes,
       breakMinutes: breakMinutes,
     );
     await _box.add(record);
     state = StatsState(records: _box.values.toList());
+    print('[STATS] Yeni kayıt eklendi. Toplam kayıt: ${state.records.length}');
   }
 }
