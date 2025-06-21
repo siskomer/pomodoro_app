@@ -5,7 +5,7 @@ import 'package:pomodoro_app/presentation/viewmodels/pomodoro_viewmodel.dart';
 import '../providers/pomodoro_provider.dart';
 import '../providers/stats_provider.dart';
 import '../providers/settings_provider.dart';
-import '../viewmodels/settings_viewmodel.dart';
+import '../../domain/entities/settings_state.dart';
 import '../theme.dart';
 import 'dart:async';
 import 'package:wakelock_plus/wakelock_plus.dart';

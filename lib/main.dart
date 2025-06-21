@@ -10,6 +10,10 @@ import 'presentation/providers/theme_mode_provider.dart';
 import 'presentation/providers/pomodoro_provider.dart';
 import 'presentation/providers/stats_provider.dart';
 import 'domain/entities/pomodoro_record.dart';
+import 'presentation/providers/settings_provider.dart';
+import 'domain/entities/settings_state.dart';
+import 'presentation/providers/todo_provider.dart';
+import 'domain/entities/todo_item.dart';
 // import 'package:flutter_localizations/flutter_localizations.dart';
 // import 'generated/l10n.dart';
 
@@ -27,8 +31,9 @@ void main() async {
   // Repository'leri ve servisleri başlat
   await container.read(notificationServiceProvider).init();
   await container.read(statsRepositoryProvider).init();
+  await container.read(settingsRepositoryProvider).init();
+  await container.read(todoRepositoryProvider).init();
 
-  await Hive.deleteBoxFromDisk('settings_box');
   runApp(ProviderScope(parent: container, child: const MyApp()));
 }
 
