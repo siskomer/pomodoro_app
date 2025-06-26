@@ -5,3 +5,4 @@ abstract class StatsRepository {
   List<PomodoroRecord> getRecords();
   Future<void> addRecord(PomodoroRecord record);
 }
+ 

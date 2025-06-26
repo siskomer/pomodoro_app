@@ -33,10 +33,10 @@ class TodoViewModel extends StateNotifier<TodoState> {
 
   Future<void> toggleTodo(String id) async {
     final todo = state.todos.firstWhere((t) => t.id == id);
-    final updatedTodo = todo.copyWith(isDone: !todo.isDone);
+      final updatedTodo = todo.copyWith(isDone: !todo.isDone);
     await _repository.updateTodo(updatedTodo);
     state = state.copyWith(todos: _repository.getTodos());
-  }
+    }
 
   Future<void> removeTodo(String id) async {
     await _repository.removeTodo(id);

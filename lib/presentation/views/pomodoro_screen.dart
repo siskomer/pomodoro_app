@@ -74,11 +74,11 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
-                        formatTime(pomodoro.remaining),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w300,
-                          color: Colors.white,
-                          fontFamily: 'monospace',
+                    formatTime(pomodoro.remaining),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: Colors.white,
+                      fontFamily: 'monospace',
                         ),
                       ),
                     ),
@@ -204,12 +204,12 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
-                        formatTime(pomodoro.remaining),
-                        style: theme.textTheme.displayLarge?.copyWith(
-                          fontFamily: 'monospace',
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
-                          color: theme.colorScheme.onBackground,
+                    formatTime(pomodoro.remaining),
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                      color: theme.colorScheme.onBackground,
                         ),
                       ),
                     ),
