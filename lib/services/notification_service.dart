@@ -111,5 +111,37 @@ class NotificationService {
   Future<void> cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
+
+  Future<void> showOngoingNotification({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'pomodoro_ongoing_channel',
+          'Pomodoro Ongoing Notifications',
+          channelDescription: 'Ongoing notification for Pomodoro timer',
+          importance: Importance.low,
+          priority: Priority.low,
+          ongoing: true,
+          showWhen: false,
+          onlyAlertOnce: true,
+        );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      id,
+      title,
+      body,
+      notificationDetails,
+    );
+  }
+
+  Future<void> cancelOngoingNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+  }
 }
- 

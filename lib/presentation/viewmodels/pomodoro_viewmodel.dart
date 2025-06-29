@@ -37,6 +37,9 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
   void pause() {
     _timer?.cancel();
     state = state.copyWith(isRunning: false);
+    if (notificationEnabled) {
+      notificationService.cancelOngoingNotification(999);
+    }
   }
 
   void reset() {
@@ -47,16 +50,32 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
       isRunning: false,
       isBreak: false,
     );
+    if (notificationEnabled) {
+      notificationService.cancelOngoingNotification(999);
+    }
   }
 
   void _startTimer() {
     state = state.copyWith(isRunning: true);
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (state.remaining > 0) {
         state = state.copyWith(remaining: state.remaining - 1);
+        if (notificationEnabled) {
+          final minutes = (state.remaining ~/ 60).toString().padLeft(2, '0');
+          final seconds = (state.remaining % 60).toString().padLeft(2, '0');
+          final timeStr = '$minutes:$seconds';
+          await notificationService.showOngoingNotification(
+            id: 999,
+            title: state.isBreak ? 'Mola Zamanı' : 'Pomodoro Zamanı',
+            body: 'Kalan süre: $timeStr',
+          );
+        }
       } else {
         _timer?.cancel();
         state = state.copyWith(isRunning: false);
+        if (notificationEnabled) {
+          await notificationService.cancelOngoingNotification(999);
+        }
         _onTimerComplete();
       }
     });
