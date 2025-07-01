@@ -59,5 +59,7 @@
   "information": "Bilgi",
   "pomodoro_info_text": "Pomodoro tekniği, 25 dakikalık odaklanma periyotları ve 5 dakikalık molalarla çalışmanızı organize etmenize yardımcı olur.",
   "enable_notifications": "Bildirimleri Aç",
-  "keep_screen_on": "Sayaç çalışırken ekranı açık tut"
+  "keep_screen_on": "Sayaç çalışırken ekranı açık tut",
+  "no_task_yet": "Henüz görev yok",
+  "add_task_hint": "Yukarıdan yeni görev ekleyerek başlayın"
 }

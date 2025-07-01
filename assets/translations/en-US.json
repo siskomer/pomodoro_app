@@ -59,5 +59,7 @@
   "dark_theme": "Dark theme",
   "information": "Information",
   "pomodoro_info_text": "The Pomodoro Technique helps you organize your work with 25-minute focus periods and 5-minute breaks.",
-  "keep_screen_on": "Keep screen on during timer"
+  "keep_screen_on": "Keep screen on during timer",
+  "no_task_yet": "No tasks yet",
+  "add_task_hint": "Start by adding a new task above"
 } 

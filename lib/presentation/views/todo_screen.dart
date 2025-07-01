@@ -307,7 +307,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Henüz görev yok',
+                        'no_task_yet'.tr(),
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: const Color(0xFF64748B),
                           fontWeight: FontWeight.w600,
@@ -315,7 +315,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Yukarıdan yeni görev ekleyerek başlayın',
+                        'add_task_hint'.tr(),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xFF94A3B8),
                         ),

@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'dart:typed_data';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -51,7 +52,7 @@ class NotificationService {
     required String title,
     required String body,
   }) async {
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
           'pomodoro_channel',
           'Pomodoro Notifications',
@@ -59,11 +60,12 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
           ticker: 'ticker',
+          enableVibration: true,
         );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
 
-    const NotificationDetails notificationDetails = NotificationDetails(
+    final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
@@ -87,7 +89,7 @@ class NotificationService {
       title,
       body,
       tz.TZDateTime.from(scheduledDate, tz.local),
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           'pomodoro_channel_scheduled',
           'Pomodoro Scheduled Notifications',
@@ -95,6 +97,7 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
           ticker: 'ticker',
+          enableVibration: true,
         ),
         iOS: DarwinNotificationDetails(),
       ),

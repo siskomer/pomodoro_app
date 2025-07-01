@@ -5,6 +5,7 @@ import '../providers/settings_provider.dart';
 import '../theme.dart';
 import '../providers/theme_mode_provider.dart';
 import '../../main.dart';
+import '../providers/pomodoro_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -424,6 +425,12 @@ class SettingsScreen extends ConsumerWidget {
                             await ref
                                 .read(settingsProvider.notifier)
                                 .setNotificationEnabled(value);
+                            if (value) {
+                              // Bildirim izni iste
+                              await ref
+                                  .read(notificationServiceProvider)
+                                  .init();
+                            }
                           },
                         ),
                       ),

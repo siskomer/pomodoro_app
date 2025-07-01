@@ -217,7 +217,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                         // Developer Info
                         Text(
-                          'by Özgen Apps',
+                          'moDevs',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.6),
                             fontSize: 14,
