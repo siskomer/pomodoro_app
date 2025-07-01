@@ -216,7 +216,7 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
       final body = state.isBreak
           ? 'Şimdi çalışma zamanı.'
           : 'Harika iş! Kısa bir mola ver.';
-      notificationService.showNotification(id: 0, title: title, body: body);
+      // notificationService.showNotification(id: 0, title: title, body: body);
     } catch (e) {
       print('notifyCompletion error: $e');
     }

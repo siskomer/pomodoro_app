@@ -52,30 +52,31 @@ class NotificationService {
     required String title,
     required String body,
   }) async {
-    final AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'pomodoro_channel',
-          'Pomodoro Notifications',
-          channelDescription: 'Notifications for Pomodoro timers',
-          importance: Importance.max,
-          priority: Priority.high,
-          ticker: 'ticker',
-          enableVibration: true,
-        );
+    // Bildirim gönderimi yoruma alındı.
+    // final AndroidNotificationDetails androidDetails =
+    //     AndroidNotificationDetails(
+    //       'pomodoro_channel',
+    //       'Pomodoro Notifications',
+    //       channelDescription: 'Notifications for Pomodoro timers',
+    //       importance: Importance.max,
+    //       priority: Priority.high,
+    //       ticker: 'ticker',
+    //       enableVibration: true,
+    //     );
 
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
+    // const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
 
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+    // final NotificationDetails notificationDetails = NotificationDetails(
+    //   android: androidDetails,
+    //   iOS: iosDetails,
+    // );
 
-    await flutterLocalNotificationsPlugin.show(
-      id,
-      title,
-      body,
-      notificationDetails,
-    );
+    // await flutterLocalNotificationsPlugin.show(
+    //   id,
+    //   title,
+    //   body,
+    //   notificationDetails,
+    // );
   }
 
   Future<void> scheduleNotification({
