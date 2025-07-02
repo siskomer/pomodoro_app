@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/pomodoro.dart';
 import '../../services/notification_service.dart';
 import 'stats_viewmodel.dart';
 import '../providers/stats_provider.dart';
 import 'package:hive/hive.dart';
+import 'dart:io';
 
 class PomodoroViewModel extends StateNotifier<Pomodoro> {
   final int pomodoroDuration;
@@ -91,7 +93,7 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
       return;
     }
     if (state.remaining == 0) {
-      _switchMode();
+      switchMode();
     } else {
       state = state.copyWith(isRunning: true);
       _saveTimerState();
@@ -125,7 +127,7 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
   }
 
   void _startTimer() {
-    state = state.copyWith(isRunning: true);
+    state = state.copyWith(isRunning: true, isWaitingForNext: false);
     _saveTimerState();
 
     if (notificationEnabled) {
@@ -151,7 +153,7 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
         if (state.remaining > 0) {
           state = state.copyWith(remaining: state.remaining - 1);
           _saveTimerState();
-          if (notificationEnabled) {
+          if (notificationEnabled && Platform.isAndroid) {
             final minutes = (state.remaining ~/ 60).toString().padLeft(2, '0');
             final seconds = (state.remaining % 60).toString().padLeft(2, '0');
             final timeStr = '$minutes:$seconds';
@@ -167,7 +169,7 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
           }
         } else {
           _timer?.cancel();
-          state = state.copyWith(isRunning: false);
+          state = state.copyWith(isRunning: false, isWaitingForNext: true);
           _clearTimerState();
           if (notificationEnabled) {
             try {
@@ -194,18 +196,32 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
   void _onTimerComplete() async {
     try {
       if (notificationEnabled) {
-        await notificationService.cancelNotification(1);
+        // Bildirim sesi çalabilsin diye 2 saniye bekle
+        Future.delayed(const Duration(seconds: 2), () async {
+          await notificationService.cancelNotification(1);
+        });
       }
+
       if (!state.isBreak) {
-        final statsViewModel = read(statsProvider.notifier);
-        statsViewModel.addRecord(
-          focusMinutes: (pomodoroDuration / 60).round(),
-          breakMinutes: (breakDuration / 60).round(),
-        );
+        // Widget build işlemi tamamlandıktan sonra stats kaydı yap
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            final statsViewModel = read(statsProvider.notifier);
+            statsViewModel.addRecord(
+              focusMinutes: (pomodoroDuration / 60).round(),
+              breakMinutes: (breakDuration / 60).round(),
+            );
+          } catch (e, stack) {
+            print('Stats kayıt hatası: $e');
+            print(stack);
+          }
+        });
       }
-      _switchMode();
-    } catch (e) {
-      print('onTimerComplete error: $e');
+
+      // _switchMode(); // Artık otomatik geçiş yok!
+    } catch (e, stack) {
+      print('onTimerComplete genel hata: $e');
+      print(stack);
     }
   }
 
@@ -222,7 +238,7 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
     }
   }
 
-  void _switchMode() {
+  void switchMode() {
     final bool wasBreak = state.isBreak;
     final newDuration = wasBreak ? pomodoroDuration : breakDuration;
     state = Pomodoro(
@@ -230,6 +246,7 @@ class PomodoroViewModel extends StateNotifier<Pomodoro> {
       remaining: newDuration,
       isRunning: false,
       isBreak: !wasBreak,
+      isWaitingForNext: false,
     );
     _clearTimerState();
   }

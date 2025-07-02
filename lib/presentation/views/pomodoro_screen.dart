@@ -74,11 +74,11 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
-                    formatTime(pomodoro.remaining),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w300,
-                      color: Colors.white,
-                      fontFamily: 'monospace',
+                        formatTime(pomodoro.remaining),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w300,
+                          color: Colors.white,
+                          fontFamily: 'monospace',
                         ),
                       ),
                     ),
@@ -144,7 +144,33 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                     const SizedBox(height: 32),
                     Center(child: _buildTimer(theme, pomodoro)),
                     const SizedBox(height: 40),
-                    _buildControls(viewModel, pomodoro, theme, settings),
+                    if (pomodoro.isWaitingForNext)
+                      ElevatedButton(
+                        onPressed: () {
+                          viewModel.switchMode();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: pomodoro.isBreak
+                              ? AppTheme.primaryColor
+                              : AppTheme.successColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Text(
+                          pomodoro.isBreak ? 'Pomodoro Başlat' : 'Mola Başlat',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    else
+                      _buildControls(viewModel, pomodoro, theme, settings),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -204,12 +230,12 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
-                    formatTime(pomodoro.remaining),
-                    style: theme.textTheme.displayLarge?.copyWith(
-                      fontFamily: 'monospace',
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
-                      color: theme.colorScheme.onBackground,
+                        formatTime(pomodoro.remaining),
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                          color: theme.colorScheme.onBackground,
                         ),
                       ),
                     ),
